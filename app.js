@@ -1,14 +1,12 @@
-const express  = require('express');
-const mysql = require('mysql2');
+import express from "express";
+// import mysql from 'mysql2';
 
 const app = express();
 
-
-
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-})
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
 
 app.listen(3000, () => {
-    console.log('Server running')
+  console.log("Server running");
 });
