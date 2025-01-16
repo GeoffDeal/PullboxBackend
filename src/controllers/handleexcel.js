@@ -1,7 +1,12 @@
 import ExcelJS from "exceljs";
 import express from "express";
 import multer from "multer";
-const app = express();
+const router = express.Router();
+
+router.get("/", (req, res) => {
+  res.send("Excel handling here");
+});
+export default router;
 
 export const categoryObj = {
   // Translate from category/sort column of excel
@@ -180,27 +185,27 @@ function xlsxToObjects(workbook, publisher) {
   };
 }
 
-function doublesCheck(newBooks, oldBooks) {
-  const newSkus = new Set(newBooks.map((book) => book.Sku));
-  const updatedList = oldBooks.filter((book) => !newSkus.has(book.Sku));
-  return updatedList;
-}
+// function doublesCheck(newBooks, oldBooks) {
+//   const newSkus = new Set(newBooks.map((book) => book.Sku));
+//   const updatedList = oldBooks.filter((book) => !newSkus.has(book.Sku));
+//   return updatedList;
+// }
 
-function seriesDoubleCheck(newSeries, oldSeries) {
-  const newArray = [...oldSeries];
+// function seriesDoubleCheck(newSeries, oldSeries) {
+//   const newArray = [...oldSeries];
 
-  newSeries.forEach((newSer) => {
-    const isDupe = newArray.some((oldSer) => {
-      return oldSer.skus.some((num) => newSer.skus.includes(num));
-    });
+//   newSeries.forEach((newSer) => {
+//     const isDupe = newArray.some((oldSer) => {
+//       return oldSer.skus.some((num) => newSer.skus.includes(num));
+//     });
 
-    if (!isDupe) {
-      newArray.push(newSer);
-    }
-  });
+//     if (!isDupe) {
+//       newArray.push(newSer);
+//     }
+//   });
 
-  return newArray;
-}
+//   return newArray;
+// }
 
 const findNumber = (title) => {
   let firstCut = title.indexOf("#");
@@ -264,7 +269,7 @@ const bookSort = (bookArray) => {
 
 const upload = multer({ dest: "uploads/" });
 
-app.post("/upload", upload.array("file"), (req, res) => {
+router.post("/upload", upload.array("file"), (req, res) => {
   try {
     const files = req.files;
     const filePaths = files.map((file) => file.path);
@@ -306,10 +311,10 @@ async function processExcel(filePaths) {
     }
   }
 
-  const updatedList = doublesCheck(booksArray, comics);
-  const sortedList = bookSort(booksArray.concat(updatedList));
+  // const updatedList = doublesCheck(booksArray, comics);
+  // const sortedList = bookSort(booksArray.concat(updatedList));
 
-  const updatedSeries = seriesDoubleCheck(seriesArray, series);
+  // const updatedSeries = seriesDoubleCheck(seriesArray, series);
 
-  return { sortedList, updatedSeries };
+  // return { sortedList, updatedSeries };
 }
