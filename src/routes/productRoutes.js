@@ -1,7 +1,8 @@
+// Imports
 import express from "express";
+import getAllProduct from "../controllers/productController.js";
+
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("Excel handling here");
-});
+router.get("/", getAllProduct);
 export default router;
