@@ -3,11 +3,6 @@ import express from "express";
 import multer from "multer";
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("Excel handling here");
-});
-export default router;
-
 export const categoryObj = {
   // Translate from category/sort column of excel
   HC: "Hardcover",
