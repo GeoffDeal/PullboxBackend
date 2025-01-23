@@ -6,15 +6,16 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-// const testCon = async () => {
-//   try {
-//     const [results] = await pool.query("SELECT 1");
-//     console.log("Success: ", results);
-//   } catch (err) {
-//     console.error("Error: ", err);
-//   }
-// };
-// testCon();
+process.on("SIGINT", async () => {
+  try {
+    await pool.end();
+    console.log("Pool Closed");
+  } catch (err) {
+    console.error("Error closing pool: ", err);
+  } finally {
+    process.exit(0);
+  }
+});
 
 // Routes
 import productRouter from "./src/routes/productRoutes.js";

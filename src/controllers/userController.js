@@ -7,8 +7,6 @@ async function getAllUsers() {
     console.log(fields);
   } catch (err) {
     console.error(err);
-  } finally {
-    await pool.end();
   }
 }
 
