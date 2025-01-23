@@ -1,6 +1,7 @@
 import express from "express";
 import pool from "./src/dbConfig.js";
 const app = express();
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");

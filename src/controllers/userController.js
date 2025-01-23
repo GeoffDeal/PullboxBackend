@@ -20,4 +20,24 @@ export async function getOneUser(req, res) {
     console.error(err);
   }
 }
-// export default getAllUsers;
+
+export async function createUser(req, res) {
+  try {
+    const newUser = req.body;
+    const userValues = [
+      newUser.name,
+      newUser.email,
+      newUser.phone,
+      true,
+      "active",
+    ];
+
+    const [result] = await pool.execute(
+      "INSERT INTO users (Name, Email, Phone, Customer, CustomerType) VALUES (?, ?, ?, ?, ?)",
+      userValues
+    );
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(500).send("Failed to create user: ", err);
+  }
+}
