@@ -51,6 +51,9 @@ app.use("/product", productRouter);
 import userRouter from "./src/routes/userRoutes.js";
 app.use("/users/", userRouter);
 
+import excelRouter from "./src/controllers/handleexcel.js";
+app.use("/excel/", excelRouter);
+
 // Listening
 app.listen(3000, () => {
   console.log("Server running");

@@ -1,6 +1,7 @@
 import ExcelJS from "exceljs";
 import express from "express";
 import multer from "multer";
+import { promises as fs } from "fs";
 const router = express.Router();
 
 export const categoryObj = {
@@ -264,15 +265,23 @@ const bookSort = (bookArray) => {
 
 const upload = multer({ dest: "uploads/" });
 
-router.post("/upload", upload.array("file"), (req, res) => {
+router.post("/upload", upload.array("file"), async (req, res) => {
+  const files = req.files;
+  const filePaths = files.map((file) => file.path);
   try {
-    const files = req.files;
-    const filePaths = files.map((file) => file.path);
-    processExcel(filePaths);
+    const { booksArray, seriesArray } = await processExcel(filePaths);
+    res.status(200).json({ booksArray, seriesArray });
   } catch (error) {
     res
       .status(500)
       .json({ error: `failed to process files: ${error.message}` });
+  } finally {
+    try {
+      await Promise.all(filePaths.map((path) => fs.unlink(path)));
+      console.log("Excel files deleted");
+    } catch (err) {
+      console.error("Error deleting files: ", err);
+    }
   }
 });
 
@@ -282,7 +291,7 @@ async function processExcel(filePaths) {
 
   for (let i = 0; i < filePaths.length; i++) {
     try {
-      const workbook = new Excel.Workbook();
+      const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(filePaths[i]);
 
       workbook.removeWorksheet(2); //Clear useless sheets and rows
@@ -311,5 +320,6 @@ async function processExcel(filePaths) {
 
   // const updatedSeries = seriesDoubleCheck(seriesArray, series);
 
-  // return { sortedList, updatedSeries };
+  return { booksArray, seriesArray };
 }
+export default router;
