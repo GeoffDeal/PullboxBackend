@@ -37,10 +37,9 @@ const tableCheck = async () => {
       CONSTRAINT series_sku_fk FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE
     );
     CREATE TABLE IF NOT EXISTS products (
-      id int AUTO_INCREMENT NOT NULL UNIQUE PRIMARY KEY,
+      sku INT NOT NULL UNIQUE PRIMARY KEY,
       product_name VARCHAR(255) NOT NULL,
       item_code VARCHAR(255) NOT NULL,
-      sku INT NOT NULL,
       msrp VARCHAR(255) NOT NULL,
       release_date DATE NOT NULL,
       foc_due_date DATE,
@@ -63,10 +62,10 @@ const tableCheck = async () => {
     CREATE TABLE IF NOT EXISTS pulls_list (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
-      product_id INT NOT NULL,
+      product_sku INT NOT NULL,
       pull_date DATE NOT NULL DEFAULT (CURRENT_DATE),
       CONSTRAINT pulls_list_fk1 FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-      CONSTRAINT pulls_list_fk2 FOREIGN KEY (product_id) REFERENCES products(id) ON UPDATE CASCADE ON DELETE CASCADE
+      CONSTRAINT pulls_list_fk2 FOREIGN KEY (product_sku) REFERENCES products(sku) ON UPDATE CASCADE ON DELETE CASCADE
     );`);
   } catch (err) {
     console.error("Problem checking tables: ", err);
