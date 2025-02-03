@@ -2,6 +2,7 @@ import ExcelJS from "exceljs";
 import express from "express";
 import multer from "multer";
 import { promises as fs } from "fs";
+import { Product } from "../models/productModels.js";
 const router = express.Router();
 
 export const categoryObj = {
@@ -95,6 +96,9 @@ function xlsxToObjects(workbook, publisher) {
       } else {
         book.ProductType = categoryObj[productType];
       }
+      if (productType === "Remove") {
+        return;
+      }
 
       if (book.ProductType === "Comic") {
         // Handle series, variant, and printing info for comics
@@ -147,8 +151,22 @@ function xlsxToObjects(workbook, publisher) {
           ? indiePriceSwitch[book.MSRP]
           : book.MSRP;
       }
-
-      book.ProductType !== "Remove" && books.push(book);
+      const newProduct = new Product(
+        book.Sku,
+        book.ProductName,
+        book.ItemCode,
+        book.MSRP,
+        book.Release,
+        book.FOCDueDate,
+        book.ImageURL,
+        book.Issue,
+        book.Variant,
+        book.Printing,
+        null,
+        book.Publisher,
+        book.ProductType
+      );
+      books.push(newProduct);
     }
   });
 
@@ -323,3 +341,5 @@ async function processExcel(filePaths) {
   return { booksArray, seriesArray };
 }
 export default router;
+
+// Posting/updating database with arrays
