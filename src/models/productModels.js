@@ -1,3 +1,5 @@
+import pool from "../dbConfig.js";
+
 export class Product {
   constructor(
     sku,
@@ -27,5 +29,35 @@ export class Product {
     this.seriesID = seriesID;
     this.publisher = publisher;
     this.productType = productType;
+  }
+}
+
+export class Series {
+  constructor(name, publisher, skus) {
+    this.name = name;
+    this.publisher = publisher;
+    this.skus = skus;
+    this.series_id = null;
+
+    this.fetchId(skus)
+      .then((results) => (this.series_id = results || null))
+      .catch((err) => {
+        console.error("Error during id assignment", err);
+      });
+  }
+  async fetchId(skus) {
+    try {
+      const [results] = await pool.execute(
+        `SELECT * FROM series_skus WHERE sku IN ?`,
+        [skus]
+      );
+      if (results && results.length) {
+        return results[0];
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching ID:", err);
+      return null;
+    }
   }
 }

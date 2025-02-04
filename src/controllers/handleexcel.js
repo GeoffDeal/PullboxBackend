@@ -2,7 +2,7 @@ import ExcelJS from "exceljs";
 import express from "express";
 import multer from "multer";
 import { promises as fs } from "fs";
-import { Product } from "../models/productModels.js";
+import { Product, Series } from "../models/productModels.js";
 const router = express.Router();
 
 export const categoryObj = {
@@ -192,10 +192,13 @@ function xlsxToObjects(workbook, publisher) {
     const copyIndices = dupIndices.slice(1);
     series = series.filter((_, index) => !copyIndices.includes(index));
   });
+  const classedSeries = series.map(
+    (series) => new Series(series.name, series.publisher, series.skus)
+  );
 
   return {
     newBooks: sorted,
-    seriesList: series,
+    seriesList: classedSeries,
   };
 }
 
