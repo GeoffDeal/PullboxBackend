@@ -12,7 +12,7 @@ export class Product {
     issue,
     variant,
     printing,
-    seriesID,
+    seriesId,
     publisher,
     productType
   ) {
@@ -26,9 +26,25 @@ export class Product {
     this.issue = issue;
     this.variant = variant;
     this.printing = printing;
-    this.seriesID = seriesID;
+    this.seriesId = seriesId;
     this.publisher = publisher;
     this.productType = productType;
+  }
+  async fetchSeriesId() {
+    try {
+      const [results] = await pool.execute(
+        `SELECT * FROM series_skus WHERE sku = ?`,
+        [this.sku]
+      );
+      if (results && results.length) {
+        this.seriesId = results[0].series_id;
+      } else {
+        this.seriesId = null;
+      }
+    } catch (err) {
+      console.error("Error fetching ID:", err);
+      return null;
+    }
   }
 }
 

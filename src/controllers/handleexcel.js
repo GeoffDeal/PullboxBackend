@@ -101,12 +101,13 @@ async function xlsxToObjects(workbook, publisher) {
         return;
       }
 
-      if (book.ProductType === "Comic") {
+      if (book.ProductType === "Comic" || book.ProductType === "Incentive") {
         // Handle series, variant, and printing info for comics
         book.SeriesSku = book.Sku.slice(0, 12);
         book.IssueSku = book.Sku.slice(0, 15);
         book.Variant = book.Sku.slice(15, 16);
         book.Printing = book.Sku.slice(16);
+        book.Sku = book.SeriesSku;
 
         if (!series.some((obj) => obj.skus.includes(book.SeriesSku))) {
           let cutIndex = -1;
@@ -204,10 +205,16 @@ async function xlsxToObjects(workbook, publisher) {
       return classSeries;
     })
   );
+  const booksWithSeries = await Promise.all(
+    sorted.map(async (book) => {
+      await book.fetchSeriesId();
+      return book;
+    })
+  );
   await Promise.all(classedSeries.map((seriesObj) => upsertSeries(seriesObj)));
 
   return {
-    newBooks: sorted,
+    newBooks: booksWithSeries,
     seriesList: classedSeries,
   };
 }
