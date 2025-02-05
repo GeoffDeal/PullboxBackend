@@ -37,15 +37,16 @@ export class Series {
     this.name = name;
     this.publisher = publisher;
     this.skus = skus;
-    this.series_id = null;
+    this.id = null;
 
-    this.fetchId(skus)
-      .then((results) => (this.series_id = results || null))
-      .catch((err) => {
-        console.error("Error during id assignment", err);
-      });
+    // this.fetchId(skus)
+    //   .then((result) => (this.id = result))
+    //   .catch((err) => {
+    //     console.error("Error during id assignment", err);
+    //   });
   }
-  async fetchId(skus) {
+  async fetchId() {
+    const skus = this.skus;
     try {
       const placeHolders = skus.map(() => "?").join(",");
       const [results] = await pool.execute(
@@ -53,9 +54,10 @@ export class Series {
         skus
       );
       if (results && results.length) {
-        return results[0];
+        this.id = results[0].series_id;
+      } else {
+        this.id = null;
       }
-      return null;
     } catch (err) {
       console.error("Error fetching ID:", err);
       return null;

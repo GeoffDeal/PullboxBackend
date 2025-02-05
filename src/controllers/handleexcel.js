@@ -3,6 +3,7 @@ import express from "express";
 import multer from "multer";
 import { promises as fs } from "fs";
 import { Product, Series } from "../models/productModels.js";
+import { upsertSeries } from "./productController.js";
 const router = express.Router();
 
 export const categoryObj = {
@@ -58,7 +59,7 @@ const indiePriceSwitch = {
   "$12.99": "$9.99",
 };
 
-function xlsxToObjects(workbook, publisher) {
+async function xlsxToObjects(workbook, publisher) {
   const books = [];
   const header = [];
   let series = [];
@@ -192,9 +193,19 @@ function xlsxToObjects(workbook, publisher) {
     const copyIndices = dupIndices.slice(1);
     series = series.filter((_, index) => !copyIndices.includes(index));
   });
-  const classedSeries = series.map(
-    (series) => new Series(series.name, series.publisher, series.skus)
+  const classedSeries = await Promise.all(
+    series.map(async (series) => {
+      const classSeries = new Series(
+        series.name,
+        series.publisher,
+        series.skus
+      );
+      await classSeries.fetchId();
+      return classSeries;
+    })
   );
+  // await Promise.all(classedSeries.map((seriesObj) => upsertSeries(seriesObj)));
+  console.log(classedSeries);
 
   return {
     newBooks: sorted,
@@ -328,6 +339,8 @@ async function processExcel(filePaths) {
         publisherName.charAt(0).toLocaleUpperCase() + publisherName.slice(1);
 
       const { newBooks, seriesList } = xlsxToObjects(workbook, capitalName);
+      console.log(seriesList);
+
       booksArray.push(...newBooks);
       seriesArray.push(...seriesList);
     } catch (error) {
