@@ -204,7 +204,7 @@ async function xlsxToObjects(workbook, publisher) {
       return classSeries;
     })
   );
-  // await Promise.all(classedSeries.map((seriesObj) => upsertSeries(seriesObj)));
+  await Promise.all(classedSeries.map((seriesObj) => upsertSeries(seriesObj)));
 
   return {
     newBooks: sorted,
@@ -341,7 +341,6 @@ async function processExcel(filePaths) {
         workbook,
         capitalName
       );
-      console.log(seriesList);
 
       booksArray.push(...newBooks);
       seriesArray.push(...seriesList);
