@@ -344,5 +344,3 @@ async function processExcel(filePaths) {
   return { booksArray, seriesArray };
 }
 export default router;
-
-// Posting/updating database with arrays

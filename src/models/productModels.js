@@ -47,9 +47,10 @@ export class Series {
   }
   async fetchId(skus) {
     try {
+      const placeHolders = skus.map(() => "?").join(",");
       const [results] = await pool.execute(
-        `SELECT * FROM series_skus WHERE sku IN ?`,
-        [skus]
+        `SELECT * FROM series_skus WHERE sku IN (${placeHolders})`,
+        skus
       );
       if (results && results.length) {
         return results[0];
