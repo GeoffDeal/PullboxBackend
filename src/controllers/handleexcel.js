@@ -24,18 +24,18 @@ export const categoryObj = {
   GN: "Graphic Novel",
   PS: "Poster",
   "Q.VARIANTS": "Incentive",
-  GC: "Remove",
-  CT: "Remove",
-  "OMNIBUS RE": "Remove",
-  "HC REPRINT": "Remove",
-  "TP REPRINT": "Remove",
-  "2ND PRINT": "Remove",
-  PROMO: "Remove",
-  SALE: "Remove",
-  STANDEE: "Remove",
-  MERCH: "Remove",
-  PLUSH: "Remove",
-  TAGS: "Remove",
+  // GC: "Remove",
+  // CT: "Remove",
+  // "OMNIBUS RE": "Remove",
+  // "HC REPRINT": "Remove",
+  // "TP REPRINT": "Remove",
+  // "2ND PRINT": "Remove",
+  // PROMO: "Remove",
+  // SALE: "Remove",
+  // STANDEE: "Remove",
+  // MERCH: "Remove",
+  // PLUSH: "Remove",
+  // TAGS: "Remove",
 };
 
 const marvelPriceSwitch = {
@@ -95,9 +95,9 @@ async function xlsxToObjects(workbook, publisher) {
         book.ProductType = "Incentive";
         book.Incentive = productType;
       } else {
-        book.ProductType = categoryObj[productType];
+        book.ProductType = categoryObj[productType] || "Remove";
       }
-      if (productType === "Remove") {
+      if (book.ProductType === "Remove") {
         return;
       }
 
