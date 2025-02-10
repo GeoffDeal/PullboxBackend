@@ -38,7 +38,7 @@ const tableCheck = async () => {
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS products (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      sku VARCHAR(40) NOT NULL,
+      sku VARCHAR(40) NOT NULL UNIQUE,
       product_name VARCHAR(255) NOT NULL,
       item_code VARCHAR(255) NOT NULL,
       msrp VARCHAR(255) NOT NULL,

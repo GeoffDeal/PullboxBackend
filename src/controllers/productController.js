@@ -21,3 +21,30 @@ export const upsertSeries = async (seriesObj) => {
     })
   );
 };
+
+export const upsertProduct = async (productObj) => {
+  try {
+    await productObj.fetchSeriesId();
+
+    await pool.execute(
+      `INSERT INTO products (sku, product_name, item_code, msrp, release_date, foc_due_date, image_url, issue, variant, printing, series_id, publisher, product_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE sku = VALUES(sku), product_name = VALUES(product_name), item_code = VALUES(item_code), msrp = VALUES(msrp), release_date = VALUES(release_date), foc_due_date = VALUES(foc_due_date), image_url = VALUES(image_url), issue = VALUES(issue), variant = VALUES(variant), printing = VALUES(printing), series_id = VALUES(series_id), publisher = VALUES(publisher), product_type = VALUES(product_type)`,
+      [
+        productObj.sku,
+        productObj.productName,
+        productObj.itemCode,
+        productObj.msrp,
+        productObj.release,
+        productObj.focDueDate ?? null,
+        productObj.imageUrl ?? null,
+        productObj.issue ?? null,
+        productObj.variant ?? null,
+        productObj.printing ?? null,
+        productObj.seriesId ?? null,
+        productObj.publisher ?? null,
+        productObj.productType ?? null,
+      ]
+    );
+  } catch (err) {
+    console.error("Error adding product: ", err, productObj);
+  }
+};

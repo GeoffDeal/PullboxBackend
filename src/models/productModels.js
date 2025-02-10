@@ -31,10 +31,11 @@ export class Product {
     this.productType = productType;
   }
   async fetchSeriesId() {
+    const seriesSku = this.sku.slice(0, 12);
     try {
       const [results] = await pool.execute(
         `SELECT * FROM series_skus WHERE sku = ?`,
-        [this.sku]
+        [seriesSku]
       );
       if (results && results.length) {
         this.seriesId = results[0].series_id;
@@ -54,12 +55,6 @@ export class Series {
     this.publisher = publisher;
     this.skus = skus;
     this.id = null;
-
-    // this.fetchId(skus)
-    //   .then((result) => (this.id = result))
-    //   .catch((err) => {
-    //     console.error("Error during id assignment", err);
-    //   });
   }
   async fetchId() {
     const skus = this.skus;

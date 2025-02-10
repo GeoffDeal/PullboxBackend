@@ -3,7 +3,7 @@ import express from "express";
 import multer from "multer";
 import { promises as fs } from "fs";
 import { Product, Series } from "../models/productModels.js";
-import { upsertSeries } from "./productController.js";
+import { upsertSeries, upsertProduct } from "./productController.js";
 const router = express.Router();
 
 export const categoryObj = {
@@ -107,7 +107,6 @@ async function xlsxToObjects(workbook, publisher) {
         book.IssueSku = book.Sku.slice(0, 15);
         book.Variant = book.Sku.slice(15, 16);
         book.Printing = book.Sku.slice(16);
-        book.Sku = book.SeriesSku;
 
         if (!series.some((obj) => obj.skus.includes(book.SeriesSku))) {
           let cutIndex = -1;
@@ -194,6 +193,8 @@ async function xlsxToObjects(workbook, publisher) {
     const copyIndices = dupIndices.slice(1);
     series = series.filter((_, index) => !copyIndices.includes(index));
   });
+
+  // Process series ids
   const classedSeries = await Promise.all(
     series.map(async (series) => {
       const classSeries = new Series(
@@ -205,41 +206,19 @@ async function xlsxToObjects(workbook, publisher) {
       return classSeries;
     })
   );
-  const booksWithSeries = await Promise.all(
-    sorted.map(async (book) => {
-      await book.fetchSeriesId();
-      return book;
-    })
-  );
-  await Promise.all(classedSeries.map((seriesObj) => upsertSeries(seriesObj)));
+
+  // const booksWithSeries = await Promise.all(
+  //   sorted.map(async (book) => {
+  //     await book.fetchSeriesId();
+  //     return book;
+  //   })
+  // );
 
   return {
-    newBooks: booksWithSeries,
+    newBooks: sorted,
     seriesList: classedSeries,
   };
 }
-
-// function doublesCheck(newBooks, oldBooks) {
-//   const newSkus = new Set(newBooks.map((book) => book.Sku));
-//   const updatedList = oldBooks.filter((book) => !newSkus.has(book.Sku));
-//   return updatedList;
-// }
-
-// function seriesDoubleCheck(newSeries, oldSeries) {
-//   const newArray = [...oldSeries];
-
-//   newSeries.forEach((newSer) => {
-//     const isDupe = newArray.some((oldSer) => {
-//       return oldSer.skus.some((num) => newSer.skus.includes(num));
-//     });
-
-//     if (!isDupe) {
-//       newArray.push(newSer);
-//     }
-//   });
-
-//   return newArray;
-// }
 
 const findNumber = (title) => {
   let firstCut = title.indexOf("#");
@@ -308,6 +287,12 @@ router.post("/upload", upload.array("file"), async (req, res) => {
   const filePaths = files.map((file) => file.path);
   try {
     const { booksArray, seriesArray } = await processExcel(filePaths);
+
+    await Promise.all(seriesArray.map((seriesObj) => upsertSeries(seriesObj)));
+    await Promise.all(
+      booksArray.map((productObj) => upsertProduct(productObj))
+    );
+
     res.status(200).json({ booksArray, seriesArray });
   } catch (error) {
     res
