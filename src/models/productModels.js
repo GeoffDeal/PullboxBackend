@@ -42,6 +42,7 @@ export class Product {
       } else {
         this.seriesId = null;
       }
+      return this;
     } catch (err) {
       console.error("Error fetching ID:", err);
       return null;

@@ -289,9 +289,10 @@ router.post("/upload", upload.array("file"), async (req, res) => {
     const { booksArray, seriesArray } = await processExcel(filePaths);
 
     await Promise.all(seriesArray.map((seriesObj) => upsertSeries(seriesObj)));
-    await Promise.all(
-      booksArray.map((productObj) => upsertProduct(productObj))
-    );
+    await upsertProduct(booksArray);
+    // await Promise.all(
+    //   booksArray.map((productObj) => upsertProduct(productObj))
+    // );
 
     res.status(200).json({ booksArray, seriesArray });
   } catch (error) {
