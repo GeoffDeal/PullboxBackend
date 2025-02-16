@@ -26,14 +26,14 @@ const tableCheck = async () => {
       date DATE NOT NULL DEFAULT (CURRENT_DATE)
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS series (
-      id INT AUTO_INCREMENT PRIMARY KEY,
+      id VARCHAR(225) PRIMARY KEY,
       name VARCHAR(225) NOT NULL,
       publisher VARCHAR(225) NOT NULL
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS  series_skus (
       id INT AUTO_INCREMENT PRIMARY KEY,
       sku VARCHAR(40) NOT NULL UNIQUE,
-      series_id INT NOT NULL,
+      series_id VARCHAR(225) NOT NULL,
       CONSTRAINT series_sku_fk FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS products (
@@ -48,7 +48,7 @@ const tableCheck = async () => {
       issue NUMERIC(10,1),
       variant VARCHAR(12),
       printing VARCHAR(12),
-      series_id INT,
+      series_id VARCHAR(225),
       publisher VARCHAR(255),
       product_type VARCHAR(255) NOT NULL,
       CONSTRAINT products_fk FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE
@@ -56,7 +56,7 @@ const tableCheck = async () => {
     await pool.execute(`CREATE TABLE IF NOT EXISTS subscriptions (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
-      series_id INT NOT NULL,
+      series_id VARCHAR(225) NOT NULL,
       CONSTRAINT subscriptions_fk1 FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
       CONSTRAINT subscriptions_fk2 FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE
     );`);

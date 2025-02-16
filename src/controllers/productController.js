@@ -1,26 +1,62 @@
 import pool from "../dbConfig.js";
+import { v4 as uuidv4 } from "uuid";
 
 // Posting/updating database with arrays
 
-export const upsertSeries = async (seriesObj) => {
-  //Add try catch
-  const [insertInfo] = await pool.execute(
-    `INSERT INTO series (id, name, publisher) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name), publisher = VALUES(publisher)`,
-    [seriesObj.id, seriesObj.name, seriesObj.publisher]
-  );
-  const newId = insertInfo.insertId;
-  if (newId !== 0) {
-    seriesObj.id = newId;
-  }
+// export const upsertSeries = async (seriesObj) => {
+//   //Add try catch
+//   const [insertInfo] = await pool.execute(
+//     `INSERT INTO series (id, name, publisher) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name), publisher = VALUES(publisher)`,
+//     [seriesObj.id, seriesObj.name, seriesObj.publisher]
+//   );
+//   const newId = insertInfo.insertId;
+//   if (newId !== 0) {
+//     seriesObj.id = newId;
+//   }
 
-  await Promise.all(
-    seriesObj.skus.map((sku) => {
-      pool.execute(
-        `INSERT IGNORE INTO series_skus (sku, series_id) VALUES (?, ?)`,
-        [sku, seriesObj.id]
-      );
-    })
-  );
+//   await Promise.all(
+//     seriesObj.skus.map((sku) => {
+//       pool.execute(
+//         `INSERT IGNORE INTO series_skus (sku, series_id) VALUES (?, ?)`,
+//         [sku, seriesObj.id]
+//       );
+//     })
+//   );
+// };
+
+export const upsertSeries = async (seriesArray) => {
+  try {
+    const [seriesSkus] = await pool.execute(`SELECT * FROM series_skus`);
+    const seriesWithId = seriesArray.map((series) => {
+      const row = seriesSkus.find((row) => series.skus.includes(row.sku));
+      if (row) {
+        series.id = row.id;
+      } else {
+        series.id = uuidv4();
+      }
+      return series;
+    });
+
+    const formattedForSeries = seriesWithId.map((seriesObj) => {
+      return [seriesObj.id, seriesObj.name, seriesObj.publisher];
+    });
+    const seriesSql = `INSERT INTO series (id, name, publisher) VALUES ? ON DUPLICATE KEY UPDATE name = VALUES(name), publisher = VALUES(publisher)`;
+    const [seriesResults] = await pool.query(seriesSql, [formattedForSeries]);
+    console.log(seriesResults);
+
+    const formattedForSkus = [];
+    seriesWithId.map((seriesObj) => {
+      seriesObj.skus.map((sku) => formattedForSkus.push([sku, seriesObj.id]));
+    });
+    console.log(formattedForSkus);
+    const skuSql = `INSERT IGNORE INTO series_skus (sku, series_id) VALUES ?`;
+    const [skuResults] = await pool.query(skuSql, [formattedForSkus]);
+    console.log(skuResults);
+    const [warnings] = await pool.query(`SHOW WARNINGS`);
+    console.log(warnings);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 // export const upsertProduct = async (productObj) => {
@@ -54,7 +90,6 @@ export const upsertProduct = async (productArray) => {
   const productsWithSeries = await Promise.all(
     productArray.map((productObj) => productObj.fetchSeriesId())
   );
-  console.log(productsWithSeries);
   const formattedData = productsWithSeries.map((productObj) => [
     productObj.sku,
     productObj.productName,
