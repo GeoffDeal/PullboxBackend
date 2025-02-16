@@ -33,11 +33,13 @@ export async function createUser(req, res) {
     ];
 
     const [result] = await pool.execute(
-      "INSERT INTO users (Name, Email, Phone, Customer, CustomerType) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO users (name, email, phone, customer, customer_type) VALUES (?, ?, ?, ?, ?)",
       userValues
     );
     res.status(200).send(result);
   } catch (err) {
-    res.status(500).send("Failed to create user: ", err);
+    res
+      .status(500)
+      .json({ message: "Failed to create user: ", error: err.message });
   }
 }
