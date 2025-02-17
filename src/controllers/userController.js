@@ -106,3 +106,23 @@ export async function addPull(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function removePull(req, res) {
+  const userId = req.params.id;
+  const productId = req.body.productId;
+
+  try {
+    const sql = `DELETE FROM pulls_list WHERE user_id = ? AND product_id = ?`;
+
+    const [result] = await pool.execute(sql, [userId, productId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ error: "No matching pull to remove" });
+    }
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
