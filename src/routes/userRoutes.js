@@ -10,6 +10,7 @@ import {
   removePull,
   changePullAmount,
   addSub,
+  removeSub,
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -27,6 +28,6 @@ router.delete("/:id/removepull", removePull);
 
 //Sub Routes
 router.post("/:id/addsub", addSub);
-// router.delete("/:id/removesub", );
+router.delete("/:id/removesub", removeSub);
 
 export default router;

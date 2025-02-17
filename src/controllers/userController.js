@@ -157,10 +157,29 @@ export async function addSub(req, res) {
   const seriesId = req.body.seriesId;
 
   try {
-    const values = [userId, seriesId];
     const sql = `INSERT INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
 
-    const [result] = await pool.execute(sql, values);
+    const [result] = await pool.execute(sql, [userId, seriesId]);
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function removeSub(req, res) {
+  const userId = req.params.id;
+  const seriesId = req.body.seriesId;
+
+  try {
+    const sql = `DELETE FROM subscriptions WHERE user_id = ? AND series_id = ?`;
+
+    const [result] = await pool.execute(sql, [userId, seriesId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Subscription not found" });
+    }
 
     res.status(200).json(result);
   } catch (err) {
