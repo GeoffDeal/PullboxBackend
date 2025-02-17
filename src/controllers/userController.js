@@ -29,11 +29,11 @@ export async function createUser(req, res) {
       newUser.email,
       newUser.phone,
       true,
-      "active",
+      "pending",
     ];
 
     const [result] = await pool.execute(
-      "INSERT INTO users (name, email, phone, customer, customer_type) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO users (name, email, phone, customer, status) VALUES (?, ?, ?, ?, ?)",
       userValues
     );
     res.status(200).send(result);
@@ -41,5 +41,23 @@ export async function createUser(req, res) {
     res
       .status(500)
       .json({ message: "Failed to create user: ", error: err.message });
+  }
+}
+
+export async function changeUserStatus(req, res) {
+  const userId = req.params.id;
+  const newStatus = req.body.status;
+  try {
+    const sql = `UPDATE users SET status = ? WHERE id = ?`;
+    const [result] = await pool.execute(sql, [newStatus, userId]);
+
+    if (result.affectRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "User status updated" });
+  } catch (err) {
+    console.error("Error updating status: ", err);
+    res.status(500).json({ error: "Internal server error " });
   }
 }

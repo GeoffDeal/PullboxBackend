@@ -17,7 +17,7 @@ const tableCheck = async () => {
       box_number INT,
       phone VARCHAR(100),
       customer TINYINT(1) NOT NULL,
-      customer_type VARCHAR(100) 
+      status VARCHAR(100) 
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS notifications (
       id INT AUTO_INCREMENT PRIMARY KEY, 
