@@ -2,8 +2,8 @@ import pool from "../dbConfig.js";
 
 export async function getAllUsers(req, res) {
   try {
-    const [rows] = await pool.execute("SELECT * FROM users");
-    res.status(200).send(rows);
+    const [users] = await pool.execute("SELECT * FROM users");
+    res.status(200).json({ users });
   } catch (err) {
     console.error(err);
   }
@@ -15,7 +15,7 @@ export async function getOneUser(req, res) {
     const [user] = await pool.execute("SELECT * FROM users WHERE ID = ?", [
       userID,
     ]);
-    res.status(200).send(user);
+    res.status(200).json(user[0]);
   } catch (err) {
     console.error(err);
   }
