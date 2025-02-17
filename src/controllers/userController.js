@@ -89,6 +89,8 @@ export async function updateUser(req, res) {
   }
 }
 
+//Pull Routes
+
 export async function addPull(req, res) {
   const userId = req.params.id;
   const productId = req.body.productId;
@@ -140,6 +142,25 @@ export async function removePull(req, res) {
     if (result.affectedRows === 0) {
       return res.status(400).json({ error: "No matching pull to remove" });
     }
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+//Sub Routes
+
+export async function addSub(req, res) {
+  const userId = req.params.id;
+  const seriesId = req.body.seriesId;
+
+  try {
+    const values = [userId, seriesId];
+    const sql = `INSERT INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
+
+    const [result] = await pool.execute(sql, values);
 
     res.status(200).json(result);
   } catch (err) {
