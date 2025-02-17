@@ -6,6 +6,7 @@ import {
   createUser,
   changeUserStatus,
   updateUser,
+  addPull,
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.get("/:id", getOneUser);
 router.post("/create", createUser);
 router.patch("/:id/status", changeUserStatus);
 router.patch("/:id/update", updateUser);
+router.post("/:id/addpull", addPull);
 
 export default router;

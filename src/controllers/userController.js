@@ -88,3 +88,21 @@ export async function updateUser(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function addPull(req, res) {
+  const userId = req.params.id;
+  const productId = req.body.productId;
+  const amountPulled = req.body.number;
+
+  try {
+    const values = [userId, productId, amountPulled];
+    const sql = `INSERT INTO pulls_list (user_id, product_id, amount) VALUES (?, ?, ?)`;
+
+    const [result] = await pool.execute(sql, values);
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
