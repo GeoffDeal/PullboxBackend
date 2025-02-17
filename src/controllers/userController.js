@@ -11,9 +11,9 @@ export async function getAllUsers(req, res) {
 
 export async function getOneUser(req, res) {
   try {
-    const userID = req.params.id;
+    const userId = req.params.id;
     const [user] = await pool.execute("SELECT * FROM users WHERE ID = ?", [
-      userID,
+      userId,
     ]);
     res.status(200).json(user[0]);
   } catch (err) {
@@ -92,13 +92,34 @@ export async function updateUser(req, res) {
 export async function addPull(req, res) {
   const userId = req.params.id;
   const productId = req.body.productId;
-  const amountPulled = req.body.number;
 
   try {
-    const values = [userId, productId, amountPulled];
-    const sql = `INSERT INTO pulls_list (user_id, product_id, amount) VALUES (?, ?, ?)`;
+    const values = [userId, productId];
+    const sql = `INSERT INTO pulls_list (user_id, product_id) VALUES (?, ?)`;
 
     const [result] = await pool.execute(sql, values);
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function changePullAmount(req, res) {
+  const userId = req.params.id;
+  const productId = req.body.productId;
+  const amount = req.body.amount;
+
+  try {
+    const values = [amount, userId, productId];
+    const sql = `UPDATE pulls_list SET amount = ? WHERE user_id = ? AND product_id = ?`;
+
+    const [result] = await pool.execute(sql, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "No pull found" });
+    }
 
     res.status(200).json(result);
   } catch (err) {
