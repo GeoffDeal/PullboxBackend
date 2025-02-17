@@ -61,3 +61,30 @@ export async function changeUserStatus(req, res) {
     res.status(500).json({ error: "Internal server error " });
   }
 }
+
+export async function updateUser(req, res) {
+  const userId = req.params.id;
+  const updates = req.body;
+
+  const allowedFields = ["name", "email", "box_number", "phone", "status"];
+  const fieldsToUpdate = Object.keys(updates).filter((field) =>
+    allowedFields.includes(field)
+  );
+
+  if (fieldsToUpdate.length === 0) {
+    return res.status(400).json({ error: "No valid fields to update" });
+  }
+
+  try {
+    const sets = fieldsToUpdate.map((field) => `\`${field}\` = ?`).join(", ");
+    const values = fieldsToUpdate.map((field) => updates[field]);
+    const sql = `UPDATE users SET ${sets} WHERE id =?`;
+
+    const [result] = await pool.execute(sql, [...values, userId]);
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
