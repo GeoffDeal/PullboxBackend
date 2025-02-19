@@ -7,7 +7,7 @@ import {
 
 const router = express.Router();
 
-router.post("/addpull/:id", addPull);
+router.post("/addpull", addPull);
 router.patch("/changepullamount/:id", changePullAmount);
 router.delete("/removepull/:id", removePull);
 
