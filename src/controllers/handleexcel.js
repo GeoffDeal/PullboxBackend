@@ -133,8 +133,9 @@ async function xlsxToObjects(workbook, publisher) {
             name: properTitle,
             publisher: book.Publisher,
           };
+          const classedSeries = new Series(seriesObj);
 
-          series.push(seriesObj);
+          series.push(classedSeries);
         }
       }
 
@@ -184,17 +185,9 @@ async function xlsxToObjects(workbook, publisher) {
     series = series.filter((_, index) => !copyIndices.includes(index));
   });
 
-  // Process series ids
-  const classedSeries = await Promise.all(
-    series.map(async (series) => {
-      const classSeries = new Series(series);
-      return classSeries;
-    })
-  );
-
   return {
     newBooks: sorted,
-    seriesList: classedSeries,
+    seriesList: series,
   };
 }
 
