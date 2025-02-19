@@ -103,6 +103,7 @@ async function xlsxToObjects(workbook, publisher) {
 
       if (book.ProductType === "Comic" || book.ProductType === "Incentive") {
         // Handle series, variant, and printing info for comics
+
         book.SeriesSku = book.Sku.slice(0, 12);
         book.IssueSku = book.Sku.slice(0, 15);
         book.Variant = book.Sku.slice(15, 16);
@@ -115,6 +116,7 @@ async function xlsxToObjects(workbook, publisher) {
           if (cutIndex === -1) {
             cutIndex = book.ProductName.toLowerCase().indexOf("cvr");
           }
+
           const capitalTitle =
             cutIndex !== -1
               ? book.ProductName.slice(0, cutIndex - 1)
@@ -152,7 +154,7 @@ async function xlsxToObjects(workbook, publisher) {
           ? indiePriceSwitch[book.MSRP]
           : book.MSRP;
       }
-      const newProduct = new Product({ ...book, seriesId: null });
+      const newProduct = new Product(book);
 
       books.push(newProduct);
     }
@@ -177,6 +179,7 @@ async function xlsxToObjects(workbook, publisher) {
       skuArray.push(...series[indNumber].skus);
     });
     series[dupIndices[0]].skus = skuArray;
+
     const copyIndices = dupIndices.slice(1);
     series = series.filter((_, index) => !copyIndices.includes(index));
   });
@@ -194,13 +197,6 @@ async function xlsxToObjects(workbook, publisher) {
     })
   );
 
-  // const booksWithSeries = await Promise.all(
-  //   sorted.map(async (book) => {
-  //     await book.fetchSeriesId();
-  //     return book;
-  //   })
-  // );
-
   return {
     newBooks: sorted,
     seriesList: classedSeries,
@@ -213,6 +209,7 @@ const findNumber = (title) => {
   if (firstCut === -1) {
     firstCut = title.indexOf("VOL.");
   }
+
   if (firstCut !== -1) {
     cutTitle = title.slice(firstCut);
   }
@@ -275,18 +272,14 @@ router.post("/upload", upload.array("file"), async (req, res) => {
   try {
     const { booksArray, seriesArray } = await processExcel(filePaths);
 
-    // await Promise.all(seriesArray.map((seriesObj) => upsertSeries(seriesObj)));
     await upsertSeries(seriesArray);
     await upsertProduct(booksArray);
-    // await Promise.all(
-    //   booksArray.map((productObj) => upsertProduct(productObj))
-    // );
 
     res.status(200).json({ booksArray, seriesArray });
   } catch (error) {
     res
       .status(500)
-      .json({ error: `failed to process files: ${error.message}` });
+      .json({ error: `Failed to process files: ${error.message}` });
   } finally {
     try {
       await Promise.all(filePaths.map((path) => fs.unlink(path)));
@@ -312,9 +305,11 @@ async function processExcel(filePaths) {
       const worksheetName = workbook.worksheets[0].name;
       const firstCut = worksheetName.indexOf("(") + 1;
       const secondCut = worksheetName.indexOf(" ", firstCut);
+
       const publisherName = worksheetName
         .slice(firstCut, secondCut)
         .toLocaleLowerCase();
+
       const capitalName =
         publisherName.charAt(0).toLocaleUpperCase() + publisherName.slice(1);
 

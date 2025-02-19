@@ -2,19 +2,19 @@ import pool from "../dbConfig.js";
 
 export class Product {
   constructor(product) {
-    this.sku = product.sku;
-    this.productName = product.productName;
-    this.itemCode = product.itemCode;
-    this.msrp = product.msrp;
-    this.release = product.release;
-    this.focDueDate = product.focDueDate;
-    this.imageUrl = product.imageUrl;
-    this.issue = product.issue;
-    this.variant = product.variant;
-    this.printing = product.printing;
-    this.seriesId = product.seriesId;
-    this.publisher = product.publisher;
-    this.productType = product.productType;
+    this.sku = product.Sku;
+    this.productName = product.ProductName;
+    this.itemCode = product.ItemCode;
+    this.msrp = product.MSRP;
+    this.release = product.Release;
+    this.focDueDate = product.FocDueDate;
+    this.imageUrl = product.ImageUrl;
+    this.issue = product.Issue;
+    this.variant = product.Variant;
+    this.printing = product.Printing;
+    this.seriesId = null;
+    this.publisher = product.Publisher;
+    this.productType = product.ProductType;
   }
   async fetchSeriesId() {
     const seriesSku = this.sku.slice(0, 12);
