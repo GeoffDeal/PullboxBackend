@@ -152,21 +152,8 @@ async function xlsxToObjects(workbook, publisher) {
           ? indiePriceSwitch[book.MSRP]
           : book.MSRP;
       }
-      const newProduct = new Product(
-        book.Sku,
-        book.ProductName,
-        book.ItemCode,
-        book.MSRP,
-        book.Release,
-        book.FOCDueDate,
-        book.ImageURL,
-        book.Issue,
-        book.Variant,
-        book.Printing,
-        null,
-        book.Publisher,
-        book.ProductType
-      );
+      const newProduct = new Product({ ...book, seriesId: null });
+
       books.push(newProduct);
     }
   });

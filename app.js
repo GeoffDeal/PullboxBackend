@@ -94,6 +94,12 @@ app.use("/product", productRouter);
 import userRouter from "./src/routes/userRoutes.js";
 app.use("/users/", userRouter);
 
+import subscriptionRouter from "./src/routes/subscriptionRoutes.js";
+app.use("/subs/", subscriptionRouter);
+
+import pullRouter from "./src/routes/pullRoutes.js";
+app.use("/pulls/", pullRouter);
+
 import excelRouter from "./src/controllers/handleexcel.js";
 app.use("/excel/", excelRouter);
 
