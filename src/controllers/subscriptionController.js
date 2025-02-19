@@ -3,8 +3,7 @@ import pool from "../dbConfig.js";
 //Sub Functions
 
 export async function addSub(req, res) {
-  const userId = req.params.id;
-  const seriesId = req.body.seriesId;
+  const { userId, seriesId } = req.body;
 
   try {
     const sql = `INSERT INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
@@ -19,12 +18,12 @@ export async function addSub(req, res) {
 }
 
 export async function removeSub(req, res) {
-  const pullId = req.params.id;
+  const subId = req.params.id;
 
   try {
     const sql = `DELETE FROM subscriptions WHERE id = ?`;
 
-    const [result] = await pool.execute(sql, [pullId]);
+    const [result] = await pool.execute(sql, [subId]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Subscription not found" });

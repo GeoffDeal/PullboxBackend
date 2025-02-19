@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/", getAllUsers);
 router.get("/:id(\\d+)", getOneUser);
 router.post("/create", createUser);
-router.patch("/:id/status", changeUserStatus);
-router.patch("/:id/update", updateUser);
+router.patch("/status/:id", changeUserStatus);
+router.patch("/update/:id", updateUser);
 
 export default router;
