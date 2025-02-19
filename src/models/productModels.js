@@ -37,28 +37,10 @@ export class Product {
 }
 
 export class Series {
-  constructor(name, publisher, skus) {
-    this.name = name;
-    this.publisher = publisher;
-    this.skus = skus;
+  constructor(series) {
+    this.name = series.name;
+    this.publisher = series.publisher;
+    this.skus = series.skus;
     this.id = null;
-  }
-  async fetchId() {
-    const skus = this.skus;
-    try {
-      const placeHolders = skus.map(() => "?").join(",");
-      const [results] = await pool.execute(
-        `SELECT * FROM series_skus WHERE sku IN (${placeHolders})`,
-        skus
-      );
-      if (results && results.length) {
-        this.id = results[0].series_id;
-      } else {
-        this.id = null;
-      }
-    } catch (err) {
-      console.error("Error fetching ID:", err);
-      return null;
-    }
   }
 }

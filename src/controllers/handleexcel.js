@@ -187,12 +187,7 @@ async function xlsxToObjects(workbook, publisher) {
   // Process series ids
   const classedSeries = await Promise.all(
     series.map(async (series) => {
-      const classSeries = new Series(
-        series.name,
-        series.publisher,
-        series.skus
-      );
-      await classSeries.fetchId();
+      const classSeries = new Series(series);
       return classSeries;
     })
   );
