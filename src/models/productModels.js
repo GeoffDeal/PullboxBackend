@@ -1,5 +1,3 @@
-import pool from "../dbConfig.js";
-
 export class Product {
   constructor(product) {
     this.sku = product.Sku;
@@ -17,7 +15,6 @@ export class Product {
     this.productType = product.ProductType;
   }
 }
-
 export class Series {
   constructor(series) {
     this.name = series.name;
