@@ -36,11 +36,20 @@ export async function removeSub(req, res) {
   }
 }
 
-export async function subsToPulls(productArray) {
+export async function subsToPulls(req, res) {
   try {
-    const [results] = await pool.execute(`SELECT * FROM subscriptions`);
+    const date = new Date();
+    const formattedDate = new Intl.DateTimeFormat("en-CA").format(date);
 
-    const subbedProducts = productArray.filter;
+    const joinSql = `SELECT subscriptions.user_id, products.id FROM subscriptions INNER JOIN products ON subscriptions.series_id=products.series_id WHERE products.date_added = ? AND products.variant = '1' AND products.printing = '1'`;
+    const [joinResults] = await pool.execute(joinSql, [formattedDate]);
+
+    const formattedResults = joinResults.map((row) => [row.user_id, row.id]);
+    console.log(formattedResults);
+    const insertSql = `INSERT INTO pulls_list (user_id, product_id) VALUES ?`;
+    const [insertResults] = await pool.query(insertSql, [formattedResults]);
+
+    res.status(500).json(insertResults);
   } catch (err) {
     console.error(err);
   }

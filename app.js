@@ -51,6 +51,7 @@ const tableCheck = async () => {
       series_id VARCHAR(225),
       publisher VARCHAR(255),
       product_type VARCHAR(255) NOT NULL,
+      date_added DATE NOT NULL DEFAULT (CURRENT_DATE),
       CONSTRAINT products_fk FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS subscriptions (
