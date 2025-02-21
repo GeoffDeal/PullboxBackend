@@ -6,9 +6,15 @@ export async function addSub(req, res) {
   const { userId, seriesId } = req.body;
 
   try {
-    const sql = `INSERT IGNORE INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
+    const subSql = `INSERT IGNORE INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
+    const [result] = await pool.execute(subSql, [userId, seriesId]);
 
-    const [result] = await pool.execute(sql, [userId, seriesId]);
+    const selectSql = `SELECT * FROM products WHERE series_id = ? AND variant = '1' AND printing = '1'`;
+    const [selectResult] = await pool.execute(selectSql, [seriesId]);
+
+    const pullValues = selectResult.map((product) => [userId, product.id]);
+    const pullSql = `INSERT IGNORE INTO pulls_list (user_id, product_id) VALUES ?`;
+    await pool.query(pullSql, [pullValues]);
 
     res.status(200).json(result);
   } catch (err) {
