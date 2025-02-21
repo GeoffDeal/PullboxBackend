@@ -4,6 +4,7 @@ import multer from "multer";
 import { promises as fs } from "fs";
 import { Product, Series } from "../models/productModels.js";
 import { upsertSeries, upsertProduct } from "./productController.js";
+import { subsToPulls } from "./subscriptionController.js";
 const router = express.Router();
 
 export const categoryObj = {
@@ -262,8 +263,9 @@ router.post("/upload", upload.array("file"), async (req, res) => {
 
     await upsertSeries(seriesArray);
     await upsertProduct(booksArray);
+    await subsToPulls();
 
-    res.status(200).json({ booksArray, seriesArray });
+    res.status(200).json({ message: "Upload successful" });
   } catch (error) {
     res
       .status(500)

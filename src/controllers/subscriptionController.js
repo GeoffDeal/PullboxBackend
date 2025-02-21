@@ -36,7 +36,7 @@ export async function removeSub(req, res) {
   }
 }
 
-export async function subsToPulls(req, res) {
+export async function subsToPulls() {
   try {
     const date = new Date();
     const formattedDate = new Intl.DateTimeFormat("en-CA").format(date);
@@ -45,11 +45,11 @@ export async function subsToPulls(req, res) {
     const [joinResults] = await pool.execute(joinSql, [formattedDate]);
 
     const formattedResults = joinResults.map((row) => [row.user_id, row.id]);
-    console.log(formattedResults);
-    const insertSql = `INSERT INTO pulls_list (user_id, product_id) VALUES ?`;
-    const [insertResults] = await pool.query(insertSql, [formattedResults]);
 
-    res.status(500).json(insertResults);
+    if (formattedResults.length !== 0) {
+      const insertSql = `INSERT INTO pulls_list (user_id, product_id) VALUES ?`;
+      await pool.query(insertSql, [formattedResults]);
+    }
   } catch (err) {
     console.error(err);
   }
