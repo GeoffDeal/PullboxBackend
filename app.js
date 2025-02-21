@@ -59,7 +59,8 @@ const tableCheck = async () => {
       user_id INT NOT NULL,
       series_id VARCHAR(225) NOT NULL,
       CONSTRAINT subscriptions_fk1 FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-      CONSTRAINT subscriptions_fk2 FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE
+      CONSTRAINT subscriptions_fk2 FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE,
+      CONSTRAINT unique_sub UNIQUE (user_id, series_id)
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS pulls_list (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,7 +69,8 @@ const tableCheck = async () => {
       amount INT NOT NULL DEFAULT 1,
       pull_date DATE NOT NULL DEFAULT (CURRENT_DATE),
       CONSTRAINT pulls_list_fk1 FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-      CONSTRAINT pulls_list_fk2 FOREIGN KEY (product_id) REFERENCES products(id) ON UPDATE CASCADE ON DELETE CASCADE
+      CONSTRAINT pulls_list_fk2 FOREIGN KEY (product_id) REFERENCES products(id) ON UPDATE CASCADE ON DELETE CASCADE,
+      CONSTRAINT unique_pull UNIQUE (user_id, product_id)
     );`);
   } catch (err) {
     console.error("Problem checking tables: ", err);

@@ -6,7 +6,7 @@ export async function addSub(req, res) {
   const { userId, seriesId } = req.body;
 
   try {
-    const sql = `INSERT INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
+    const sql = `INSERT IGNORE INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
 
     const [result] = await pool.execute(sql, [userId, seriesId]);
 

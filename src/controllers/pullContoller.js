@@ -6,7 +6,7 @@ export async function addPull(req, res) {
 
   try {
     const values = [userId, productId];
-    const sql = `INSERT INTO pulls_list (user_id, product_id) VALUES (?, ?)`;
+    const sql = `INSERT IGNORE INTO pulls_list (user_id, product_id) VALUES (?, ?)`;
 
     const [result] = await pool.execute(sql, values);
 
