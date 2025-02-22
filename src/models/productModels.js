@@ -5,8 +5,8 @@ export class Product {
     this.itemCode = product.ItemCode;
     this.msrp = product.MSRP;
     this.release = product.Release;
-    this.focDueDate = product.FocDueDate;
-    this.imageUrl = product.ImageUrl;
+    this.focDueDate = product.FOCDueDate;
+    this.imageUrl = product.ImageURL;
     this.issue = product.Issue;
     this.variant = product.Variant;
     this.printing = product.Printing;
