@@ -3,6 +3,7 @@ import {
   addPull,
   changePullAmount,
   checkPull,
+  getUserPulls,
   removePull,
 } from "../controllers/pullContoller.js";
 
@@ -12,5 +13,6 @@ router.post("/addpull", addPull);
 router.patch("/changepullamount/:id", changePullAmount);
 router.delete("/removepull/:id", removePull);
 router.get("/checkpull", checkPull);
+router.get("/getuserpulls", getUserPulls);
 
 export default router;
