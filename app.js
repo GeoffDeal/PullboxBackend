@@ -23,6 +23,7 @@ const tableCheck = async () => {
       id INT AUTO_INCREMENT PRIMARY KEY, 
       title VARCHAR(100) NOT NULL, 
       body TEXT,
+      image_url VARCHAR(255),
       date DATE NOT NULL DEFAULT (CURRENT_DATE)
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS series (
@@ -102,6 +103,9 @@ app.use("/subs/", subscriptionRouter);
 
 import pullRouter from "./src/routes/pullRoutes.js";
 app.use("/pulls/", pullRouter);
+
+import notificationRouter from "./src/routes/notificationRoutes.js";
+app.use("/notifications", notificationRouter);
 
 import excelRouter from "./src/controllers/handleexcel.js";
 app.use("/excel/", excelRouter);
