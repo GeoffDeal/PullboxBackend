@@ -36,7 +36,7 @@ export async function createUser(req, res) {
       "INSERT INTO users (name, email, phone, customer, status) VALUES (?, ?, ?, ?, ?)",
       userValues
     );
-    res.status(200).send(result);
+    res.status(201).send(result);
   } catch (err) {
     res
       .status(500)

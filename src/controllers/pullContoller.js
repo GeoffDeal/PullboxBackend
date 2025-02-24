@@ -10,7 +10,7 @@ export async function addPull(req, res) {
 
     const [result] = await pool.execute(sql, values);
 
-    res.status(200).json(result);
+    res.status(201).json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -47,7 +47,7 @@ export async function removePull(req, res) {
     const [result] = await pool.execute(sql, [pullId]);
 
     if (result.affectedRows === 0) {
-      return res.status(400).json({ error: "No matching pull to remove" });
+      return res.status(404).json({ error: "No matching pull to remove" });
     }
 
     res.status(200).json(result);
@@ -67,7 +67,7 @@ export async function checkPull(req, res) {
     if (result.length !== 0) {
       return res.status(200).json(result);
     }
-    res.status(400).json({ message: "No pull" });
+    res.status(204).send();
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -84,7 +84,7 @@ export async function getUserPulls(req, res) {
     if (results.length !== 0) {
       return res.status(200).json(results);
     }
-    res.status(400).json({ message: "No pulls found" });
+    res.status(204).send();
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -101,7 +101,7 @@ export async function getWeeksPulls(req, res) {
     if (results.length !== 0) {
       return res.status(200).json(results);
     }
-    res.status(204).json({ message: "No pulls found" });
+    res.status(204).send();
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

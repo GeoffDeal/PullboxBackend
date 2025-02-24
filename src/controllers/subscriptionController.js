@@ -16,7 +16,7 @@ export async function addSub(req, res) {
     const pullSql = `INSERT IGNORE INTO pulls_list (user_id, product_id) VALUES ?`;
     await pool.query(pullSql, [pullValues]);
 
-    res.status(200).json(result);
+    res.status(201).json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
