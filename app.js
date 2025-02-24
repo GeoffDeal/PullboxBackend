@@ -92,7 +92,7 @@ process.on("SIGINT", async () => {
 
 // Routes
 import productRouter from "./src/routes/productRoutes.js";
-app.use("/product", productRouter);
+app.use("/products/", productRouter);
 
 import userRouter from "./src/routes/userRoutes.js";
 app.use("/users/", userRouter);

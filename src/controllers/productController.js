@@ -65,3 +65,20 @@ export const upsertProduct = async (productArray) => {
     console.error(err);
   }
 };
+
+export async function getProduct(req, res) {
+  const productId = req.params.id;
+
+  try {
+    const sql = `SELECT * FROM products WHERE id = ?`;
+    const [result] = await pool.execute(sql, [productId]);
+
+    if (result.length !== 0) {
+      return res.status(200).json(result);
+    }
+    res.status(404).json({ error: "Product not found" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internat server error" });
+  }
+}
