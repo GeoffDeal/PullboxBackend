@@ -56,3 +56,20 @@ export async function removePull(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function checkPull(req, res) {
+  const { userId, productId } = req.body;
+
+  try {
+    const sql = `SELECT id FROM pulls_list WHERE user_id = ? AND product_id = ?`;
+    const [result] = await pool.execute(sql, [userId, productId]);
+
+    if (result.length !== 0) {
+      return res.status(200).json(result);
+    }
+    res.status(400).json({ message: "No pull" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
