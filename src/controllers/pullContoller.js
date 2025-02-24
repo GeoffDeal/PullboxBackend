@@ -90,3 +90,20 @@ export async function getUserPulls(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function getWeeksPulls(req, res) {
+  const release = req.body.release;
+
+  try {
+    const sql = `SELECT * FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id WHERE products.release_date= ?`;
+    const [results] = await pool.execute(sql, [release]);
+
+    if (results.length !== 0) {
+      return res.status(200).json(results);
+    }
+    res.status(204).json({ message: "No pulls found" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
