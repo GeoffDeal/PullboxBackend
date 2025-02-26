@@ -14,6 +14,9 @@ export class Product {
     this.publisher = product.Publisher ?? null;
     this.productType = product.ProductType ?? null;
   }
+  get seriesSku() {
+    return this.sku.slice(0, 12);
+  }
   arrayFormat() {
     return [
       this.sku,

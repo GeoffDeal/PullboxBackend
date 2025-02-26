@@ -33,14 +33,14 @@ export const upsertSeries = async (seriesArray) => {
 
 export const upsertProduct = async (productArray) => {
   try {
-    const seriesSkus = productArray.map((product) => product.sku.slice(0, 12));
+    const seriesSkus = productArray.map((product) => product.seriesSku);
 
     const seriesSql = `SELECT * FROM series_skus WHERE sku IN (?)`;
     const [results] = await pool.query(seriesSql, [seriesSkus]);
 
     const productsWithSeries = productArray.map((product) => {
-      const seriesSku = product.sku.slice(0, 12);
-      const seriesRow = results.find((row) => seriesSku === row.sku);
+      // const seriesSku = product.sku.slice(0, 12);
+      const seriesRow = results.find((row) => product.seriesSku === row.sku);
       product.seriesId = seriesRow ? seriesRow.series_id : null;
       return product;
     });
