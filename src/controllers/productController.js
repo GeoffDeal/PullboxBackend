@@ -33,7 +33,10 @@ export const upsertSeries = async (seriesArray) => {
 
 export const upsertProduct = async (productArray) => {
   try {
-    const [results] = await pool.execute(`SELECT * FROM series_skus`);
+    const seriesSkus = productArray.map((product) => product.sku.slice(0, 12));
+
+    const seriesSql = `SELECT * FROM series_skus WHERE sku IN (?)`;
+    const [results] = await pool.query(seriesSql, [seriesSkus]);
 
     const productsWithSeries = productArray.map((product) => {
       const seriesSku = product.sku.slice(0, 12);
@@ -79,6 +82,6 @@ export async function getProduct(req, res) {
     res.status(404).json({ error: "Product not found" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internat server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 }
