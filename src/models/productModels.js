@@ -5,14 +5,31 @@ export class Product {
     this.itemCode = product.ItemCode;
     this.msrp = product.MSRP;
     this.release = product.Release;
-    this.focDueDate = product.FOCDueDate;
-    this.imageUrl = product.ImageURL;
-    this.issue = product.Issue;
-    this.variant = product.Variant;
-    this.printing = product.Printing;
+    this.focDueDate = product.FOCDueDate ?? null;
+    this.imageUrl = product.ImageURL ?? null;
+    this.issue = product.Issue ?? null;
+    this.variant = product.Variant ?? null;
+    this.printing = product.Printing ?? null;
     this.seriesId = null;
-    this.publisher = product.Publisher;
-    this.productType = product.ProductType;
+    this.publisher = product.Publisher ?? null;
+    this.productType = product.ProductType ?? null;
+  }
+  arrayFormat() {
+    return [
+      this.sku,
+      this.productName,
+      this.itemCode,
+      this.msrp,
+      this.release,
+      this.focDueDate,
+      this.imageUrl,
+      this.issue,
+      this.variant,
+      this.printing,
+      this.seriesId,
+      this.publisher,
+      this.productType,
+    ];
   }
 }
 export class Series {
