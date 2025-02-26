@@ -171,22 +171,6 @@ async function xlsxToObjects(workbook, publisher) {
   };
 }
 
-// const findNumber = (title) => {
-//   let firstCut = title.indexOf("#");
-//   let cutTitle;
-//   if (firstCut === -1) {
-//     firstCut = title.indexOf("VOL.");
-//   }
-
-//   if (firstCut !== -1) {
-//     cutTitle = title.slice(firstCut);
-//   }
-//   const number = cutTitle ? cutTitle.match(/\d+/) : null;
-//   const issueNumber = number ? number[0] : -1; // -1 for books without an issue or vol number, reserving 0 for the few books which use it
-
-//   return issueNumber;
-// };
-
 const bookSort = (bookArray) => {
   const currentDate = new Date();
 
@@ -294,11 +278,6 @@ async function processExcel(filePaths) {
       continue;
     }
   }
-
-  // const updatedList = doublesCheck(booksArray, comics);
-  // const sortedList = bookSort(booksArray.concat(updatedList));
-
-  // const updatedSeries = seriesDoubleCheck(seriesArray, series);
 
   return { booksArray, seriesArray };
 }

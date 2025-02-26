@@ -1,4 +1,5 @@
 import pool from "../dbConfig.js";
+import { User } from "../models/userModel.js";
 
 export async function getAllUsers(req, res) {
   try {
@@ -23,14 +24,8 @@ export async function getOneUser(req, res) {
 
 export async function createUser(req, res) {
   try {
-    const newUser = req.body;
-    const userValues = [
-      newUser.name,
-      newUser.email,
-      newUser.phone,
-      true,
-      "pending",
-    ];
+    const newUser = new User(req.body);
+    const userValues = newUser.arrayFormat();
 
     const [result] = await pool.execute(
       "INSERT INTO users (name, email, phone, customer, status) VALUES (?, ?, ?, ?, ?)",
