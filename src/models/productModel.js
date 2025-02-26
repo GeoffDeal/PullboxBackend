@@ -50,11 +50,3 @@ export class Product {
     ];
   }
 }
-export class Series {
-  constructor(series) {
-    this.name = series.name;
-    this.publisher = series.publisher;
-    this.skus = series.skus;
-    this.id = null;
-  }
-}

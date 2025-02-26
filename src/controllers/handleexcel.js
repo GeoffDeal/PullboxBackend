@@ -2,7 +2,8 @@ import ExcelJS from "exceljs";
 import express from "express";
 import multer from "multer";
 import { promises as fs } from "fs";
-import { Product, Series } from "../models/productModels.js";
+import { Product } from "../models/productModel.js";
+import { Series } from "../models/seriesModel.js";
 import { upsertSeries, upsertProduct } from "./productController.js";
 import { subsToPulls } from "./subscriptionController.js";
 const router = express.Router();
@@ -113,31 +114,9 @@ async function xlsxToObjects(workbook, publisher) {
         book["printing"] = book["sku"].slice(16);
 
         if (!series.some((obj) => obj.skus.includes(book.seriesSku))) {
-          let cutIndex = -1;
-          const hastagIndex = book["productName"].indexOf("#");
-          cutIndex = hastagIndex;
-          if (cutIndex === -1) {
-            cutIndex = book["productName"].toLowerCase().indexOf("cvr");
-          }
-
-          const capitalTitle =
-            cutIndex !== -1
-              ? book["productName"].slice(0, cutIndex - 1)
-              : book["productName"];
-          const words = capitalTitle.toLowerCase().split(" ");
-          const properTitle = words
-            .map((word) => {
-              return word.replace(word.charAt(0), word.charAt(0).toUpperCase());
-            })
-            .join(" ");
-
-          const seriesObj = {
-            skus: [book.seriesSku],
-            name: properTitle,
-            publisher: book["publisher"],
-          };
-          const classedSeries = new Series(seriesObj);
-          series.push(classedSeries);
+          const seriesObj = new Series(book["publisher"], [book.seriesSku]);
+          seriesObj.properTitle = book["productName"];
+          series.push(seriesObj);
         }
       }
 
@@ -157,7 +136,6 @@ async function xlsxToObjects(workbook, publisher) {
           ? indiePriceSwitch[book["msrp"]]
           : book["msrp"];
       }
-      // const newProduct = new Product(book);
 
       books.push(book);
     }
