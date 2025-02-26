@@ -49,6 +49,7 @@ const tableCheck = async () => {
       issue NUMERIC(10,1),
       variant VARCHAR(12),
       printing VARCHAR(12),
+      incentive VARCHAR(20),
       series_id VARCHAR(225),
       publisher VARCHAR(255),
       product_type VARCHAR(255) NOT NULL,

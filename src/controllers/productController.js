@@ -39,7 +39,6 @@ export const upsertProduct = async (productArray) => {
     const [results] = await pool.query(seriesSql, [seriesSkus]);
 
     const productsWithSeries = productArray.map((product) => {
-      // const seriesSku = product.sku.slice(0, 12);
       const seriesRow = results.find((row) => product.seriesSku === row.sku);
       product.seriesId = seriesRow ? seriesRow.series_id : null;
       return product;
@@ -49,7 +48,7 @@ export const upsertProduct = async (productArray) => {
       productObj.arrayFormat()
     );
 
-    const sql = `INSERT INTO products (sku, product_name, item_code, msrp, release_date, foc_due_date, image_url, issue, variant, printing, series_id, publisher, product_type) VALUES ? ON DUPLICATE KEY UPDATE sku = VALUES(sku), product_name = VALUES(product_name), item_code = VALUES(item_code), msrp = VALUES(msrp), release_date = VALUES(release_date), foc_due_date = VALUES(foc_due_date), image_url = VALUES(image_url), issue = VALUES(issue), variant = VALUES(variant), printing = VALUES(printing), series_id = VALUES(series_id), publisher = VALUES(publisher), product_type = VALUES(product_type)`;
+    const sql = `INSERT INTO products (sku, product_name, item_code, msrp, release_date, foc_due_date, image_url, issue, variant, printing, incentive, series_id, publisher, product_type) VALUES ? ON DUPLICATE KEY UPDATE sku = VALUES(sku), product_name = VALUES(product_name), item_code = VALUES(item_code), msrp = VALUES(msrp), release_date = VALUES(release_date), foc_due_date = VALUES(foc_due_date), image_url = VALUES(image_url), issue = VALUES(issue), variant = VALUES(variant), printing = VALUES(printing), series_id = VALUES(series_id), publisher = VALUES(publisher), product_type = VALUES(product_type)`;
 
     await pool.query(sql, [formattedData]);
   } catch (err) {

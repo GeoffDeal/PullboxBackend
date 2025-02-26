@@ -10,6 +10,7 @@ export class Product {
     this.issue = null;
     this.variant = null;
     this.printing = null;
+    this.incentive = null;
     this.seriesId = null;
     this.publisher = null;
     this.productType = null;
@@ -44,6 +45,7 @@ export class Product {
       this.issue,
       this.variant,
       this.printing,
+      this.incentive,
       this.seriesId,
       this.publisher,
       this.productType,
