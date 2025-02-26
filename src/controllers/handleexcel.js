@@ -89,7 +89,7 @@ async function xlsxToObjects(workbook, publisher) {
         if (formattedKey) book[formattedKey] = rowList[index];
       });
 
-      book["issue"] = findNumber(book.productName);
+      book.setIssue = book["productName"];
 
       book["publisher"] = publisher;
 
@@ -193,21 +193,21 @@ async function xlsxToObjects(workbook, publisher) {
   };
 }
 
-const findNumber = (title) => {
-  let firstCut = title.indexOf("#");
-  let cutTitle;
-  if (firstCut === -1) {
-    firstCut = title.indexOf("VOL.");
-  }
+// const findNumber = (title) => {
+//   let firstCut = title.indexOf("#");
+//   let cutTitle;
+//   if (firstCut === -1) {
+//     firstCut = title.indexOf("VOL.");
+//   }
 
-  if (firstCut !== -1) {
-    cutTitle = title.slice(firstCut);
-  }
-  const number = cutTitle ? cutTitle.match(/\d+/) : null;
-  const issueNumber = number ? number[0] : -1; // -1 for books without an issue or vol number, reserving 0 for the few books which use it
+//   if (firstCut !== -1) {
+//     cutTitle = title.slice(firstCut);
+//   }
+//   const number = cutTitle ? cutTitle.match(/\d+/) : null;
+//   const issueNumber = number ? number[0] : -1; // -1 for books without an issue or vol number, reserving 0 for the few books which use it
 
-  return issueNumber;
-};
+//   return issueNumber;
+// };
 
 const bookSort = (bookArray) => {
   const currentDate = new Date();
