@@ -25,18 +25,6 @@ export const categoryObj = {
   GN: "Graphic Novel",
   PS: "Poster",
   "Q.VARIANTS": "Incentive",
-  // GC: "Remove",
-  // CT: "Remove",
-  // "OMNIBUS RE": "Remove",
-  // "HC REPRINT": "Remove",
-  // "TP REPRINT": "Remove",
-  // "2ND PRINT": "Remove",
-  // PROMO: "Remove",
-  // SALE: "Remove",
-  // STANDEE: "Remove",
-  // MERCH: "Remove",
-  // PLUSH: "Remove",
-  // TAGS: "Remove",
 };
 
 const marvelPriceSwitch = {
@@ -58,6 +46,15 @@ const indiePriceSwitch = {
   "$10.99": "$7.99",
   "$11.99": "$8.99",
   "$12.99": "$9.99",
+};
+const keyTranslation = {
+  "Product Name": "productName",
+  "Item Code": "itemCode",
+  Sku: "sku",
+  MSRP: "msrp",
+  Release: "release",
+  "FOC Due Date": "focDueDate",
+  "Image URL": "imageUrl",
 };
 
 async function xlsxToObjects(workbook, publisher) {
@@ -81,47 +78,52 @@ async function xlsxToObjects(workbook, publisher) {
         }
       });
 
-      const book = {};
+      const book = new Product();
+      let category;
       header.forEach((key, index) => {
-        const spacelessKey = key.replace(/\s+/g, "");
-        book[spacelessKey] = rowList[index];
+        if (key === "Category" || key === "Sort") {
+          category = rowList[index];
+          return;
+        }
+        const formattedKey = keyTranslation[key];
+        if (formattedKey) book[formattedKey] = rowList[index];
       });
 
-      book.Issue = findNumber(book.ProductName);
+      book["issue"] = findNumber(book.productName);
 
-      book.Publisher = publisher;
+      book["publisher"] = publisher;
 
-      const productType = book.Category || book.Sort;
-      if (productType.includes("1:")) {
-        book.ProductType = "Incentive";
-        book.Incentive = productType;
+      if (category.includes("1:")) {
+        book["productType"] = "Incentive";
+        book["incentive"] = category;
       } else {
-        book.ProductType = categoryObj[productType] || "Remove";
+        book["productType"] = categoryObj[category] || "Remove";
       }
-      if (book.ProductType === "Remove") {
+      if (book["productType"] === "Remove") {
         return;
       }
 
-      if (book.ProductType === "Comic" || book.ProductType === "Incentive") {
+      if (
+        book["productType"] === "Comic" ||
+        book["productType"] === "Incentive"
+      ) {
         // Handle series, variant, and printing info for comics
 
-        book.SeriesSku = book.Sku.slice(0, 12);
-        book.IssueSku = book.Sku.slice(0, 15);
-        book.Variant = book.Sku.slice(15, 16);
-        book.Printing = book.Sku.slice(16);
+        book["variant"] = book["sku"].slice(15, 16);
+        book["printing"] = book["sku"].slice(16);
 
-        if (!series.some((obj) => obj.skus.includes(book.SeriesSku))) {
+        if (!series.some((obj) => obj.skus.includes(book.seriesSku))) {
           let cutIndex = -1;
-          const hastagIndex = book.ProductName.indexOf("#");
+          const hastagIndex = book["productName"].indexOf("#");
           cutIndex = hastagIndex;
           if (cutIndex === -1) {
-            cutIndex = book.ProductName.toLowerCase().indexOf("cvr");
+            cutIndex = book["productName"].toLowerCase().indexOf("cvr");
           }
 
           const capitalTitle =
             cutIndex !== -1
-              ? book.ProductName.slice(0, cutIndex - 1)
-              : book.ProductName;
+              ? book["productName"].slice(0, cutIndex - 1)
+              : book["productName"];
           const words = capitalTitle.toLowerCase().split(" ");
           const properTitle = words
             .map((word) => {
@@ -130,35 +132,34 @@ async function xlsxToObjects(workbook, publisher) {
             .join(" ");
 
           const seriesObj = {
-            skus: [book.SeriesSku],
+            skus: [book.seriesSku],
             name: properTitle,
-            publisher: book.Publisher,
+            publisher: book["publisher"],
           };
           const classedSeries = new Series(seriesObj);
-
           series.push(classedSeries);
         }
       }
 
       if (
-        book.Publisher === "Marvel" &&
-        (book.ProductType === "Comic" || book.ProductType === "Incentive")
+        book["publisher"] === "Marvel" &&
+        (book["productType"] === "Comic" || book["productType"] === "Incentive")
       ) {
-        book.MSRP = marvelPriceSwitch[book.MSRP]
-          ? marvelPriceSwitch[book.MSRP]
-          : book.MSRP;
+        book["msrp"] = marvelPriceSwitch[book["msrp"]]
+          ? marvelPriceSwitch[book["msrp"]]
+          : book["msrp"];
       }
       if (
-        book.Publisher === "Idw" &&
-        (book.ProductType === "Comic" || book.ProductType === "Incentive")
+        book["publisher"] === "Idw" &&
+        (book["publisher"] === "Comic" || book["publisher"] === "Incentive")
       ) {
-        book.MSRP = indiePriceSwitch[book.MSRP]
-          ? indiePriceSwitch[book.MSRP]
-          : book.MSRP;
+        book["msrp"] = indiePriceSwitch[book["msrp"]]
+          ? indiePriceSwitch[book["msrp"]]
+          : book["msrp"];
       }
-      const newProduct = new Product(book);
+      // const newProduct = new Product(book);
 
-      books.push(newProduct);
+      books.push(book);
     }
   });
 
@@ -214,7 +215,7 @@ const bookSort = (bookArray) => {
   const newBooks = [];
   const oldBooks = [];
   bookArray.forEach((book) => {
-    const releaseDate = new Date(book.Release);
+    const releaseDate = new Date(book["release"]);
     if (releaseDate > currentDate) {
       newBooks.push(book);
     } else {
@@ -225,7 +226,7 @@ const bookSort = (bookArray) => {
   const beforeFoc = [];
   const afterFoc = [];
   newBooks.forEach((book) => {
-    const focDate = new Date(book.FOCDueDate);
+    const focDate = new Date(book["focDueDate"]);
     if (focDate > currentDate) {
       afterFoc.push(book);
     } else {
