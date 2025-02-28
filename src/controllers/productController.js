@@ -72,3 +72,38 @@ export async function getProduct(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function getBrowsed(req, res) {
+  const { week, date, product, publisher } = req.params;
+
+  const weekBegin = new Date(date);
+  const weekEnd = new Date(weekBegin);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  try {
+    let sql = `SELECT * FROM products WHERE`;
+    const params = [weekBegin, weekEnd];
+
+    if (week === "foc") {
+      sql += ` foc_due_date >= ? AND foc_due_date < ?`;
+    } else {
+      sql += " release_date >= ? AND release_date < ?";
+    }
+    if (product !== "all") {
+      sql += ` AND product_type = ?`;
+      params.push(product);
+    }
+    if (publisher !== "all") {
+      sql += ` AND publisher = ?`;
+      params.push(publisher);
+    }
+    const [results] = await pool.execute(sql, params);
+
+    if (results.length === 0) {
+      return res.status(204).json({ message: "No results found" });
+    }
+    res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
