@@ -1,3 +1,4 @@
+import { transformProduct } from "../datatransformers/productTransformers.js";
 import pool from "../dbConfig.js";
 
 export async function addPull(req, res) {
@@ -82,7 +83,10 @@ export async function getUserPulls(req, res) {
     const [results] = await pool.execute(sql, [userId, release]);
 
     if (results.length !== 0) {
-      return res.status(200).json(results);
+      const formattedResults = results.map((product) =>
+        transformProduct(product)
+      );
+      return res.status(200).json(formattedResults);
     }
     res.status(204).send();
   } catch (err) {
@@ -99,7 +103,10 @@ export async function getWeeksPulls(req, res) {
     const [results] = await pool.execute(sql, [release]);
 
     if (results.length !== 0) {
-      return res.status(200).json(results);
+      const formattedResults = results.map((product) =>
+        transformProduct(product)
+      );
+      return res.status(200).json(formattedResults);
     }
     res.status(204).send();
   } catch (err) {
