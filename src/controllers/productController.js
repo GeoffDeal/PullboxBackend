@@ -1,5 +1,6 @@
 import pool from "../dbConfig.js";
 import { v4 as uuidv4 } from "uuid";
+import { transformProduct } from "../datatransformers/productTransformers.js";
 
 export const upsertSeries = async (seriesArray) => {
   try {
@@ -101,7 +102,11 @@ export async function getBrowsed(req, res) {
     if (results.length === 0) {
       return res.status(204).json({ message: "No results found" });
     }
-    res.status(200).json(results);
+
+    const formattedResults = results.map((product) =>
+      transformProduct(product)
+    );
+    res.status(200).json(formattedResults);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
