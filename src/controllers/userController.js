@@ -1,10 +1,13 @@
 import pool from "../dbConfig.js";
 import { User } from "../models/userModel.js";
+import { transformUser } from "../datatransformers/userTransformer.js";
 
 export async function getAllUsers(req, res) {
   try {
     const [users] = await pool.execute("SELECT * FROM users");
-    res.status(200).json({ users });
+
+    const formattedUsers = users.map((user) => transformUser(user));
+    res.status(200).json(formattedUsers);
   } catch (err) {
     console.error(err);
   }
@@ -16,7 +19,8 @@ export async function getOneUser(req, res) {
     const [user] = await pool.execute("SELECT * FROM users WHERE ID = ?", [
       userId,
     ]);
-    res.status(200).json(user[0]);
+    const formattedUser = transformUser(user[0]);
+    res.status(200).json(formattedUser);
   } catch (err) {
     console.error(err);
   }

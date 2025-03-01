@@ -65,7 +65,8 @@ export async function getProduct(req, res) {
     const [result] = await pool.execute(sql, [productId]);
 
     if (result.length !== 0) {
-      return res.status(200).json(result);
+      const formattedProduct = transformProduct(result[0]);
+      return res.status(200).json(formattedProduct);
     }
     res.status(404).json({ error: "Product not found" });
   } catch (err) {
