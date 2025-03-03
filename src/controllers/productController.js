@@ -113,3 +113,35 @@ export async function getBrowsed(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function getSearched(req, res) {
+  const { term, page = 1 } = req.query;
+  const offset = (page - 1) * 20;
+  const wildcardTerm = term + "*";
+
+  try {
+    const sql = `SELECT * FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE) 
+      ORDER BY 
+        CASE 
+          WHEN foc_due_date >= CURDATE() THEN 1 
+          WHEN release_date >= CURDATE() THEN 2 
+          ELSE 3 
+        END, 
+        foc_due_date ASC, 
+        release_date ASC 
+      LIMIT 20 OFFSET ?`;
+    const values = [wildcardTerm, offset];
+
+    const [results] = await pool.query(sql, values);
+
+    if (results.length === 0) {
+      return res.status(204).json({ message: "No products found" });
+    }
+
+    const formattedData = results.map(transformProduct);
+    res.status(200).json(formattedData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}

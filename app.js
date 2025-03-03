@@ -54,7 +54,9 @@ const tableCheck = async () => {
       publisher VARCHAR(255),
       product_type VARCHAR(255) NOT NULL,
       date_added DATE NOT NULL DEFAULT (CURRENT_DATE),
-      CONSTRAINT products_fk FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE
+      CONSTRAINT products_fk FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE,
+      INDEX idx_release_foc (foc_due_date, release_date),
+      FULLTEXT INDEX idx_product_name (product_name)
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS subscriptions (
       id INT AUTO_INCREMENT PRIMARY KEY,

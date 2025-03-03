@@ -136,7 +136,6 @@ async function xlsxToObjects(workbook, publisher) {
           ? indiePriceSwitch[book["msrp"]]
           : book["msrp"];
       }
-      if (book["incentive"]) console.log(book);
       books.push(book);
     }
   });
