@@ -76,13 +76,14 @@ export async function getProduct(req, res) {
 }
 
 export async function getBrowsed(req, res) {
-  const { week, date, product, publisher, page } = req.query;
+  const { week, date, product, publisher, limit = 20, page = 1 } = req.query;
 
   const weekBegin = new Date(date);
   const weekEnd = new Date(weekBegin);
   weekEnd.setDate(weekEnd.getDate() + 7);
 
-  const offset = (page - 1) * 20;
+  const numberLimit = parseInt(limit);
+  const offset = (page - 1) * numberLimit;
   try {
     let sql = `SELECT * FROM products WHERE`;
     const params = [weekBegin, weekEnd];
@@ -108,8 +109,8 @@ export async function getBrowsed(req, res) {
         END, 
         foc_due_date ASC, 
         release_date ASC 
-      LIMIT 20 OFFSET ?`;
-    params.push(offset);
+      LIMIT ? OFFSET ?`;
+    params.push(numberLimit, offset);
 
     const [results] = await pool.query(sql, params);
 
@@ -128,8 +129,9 @@ export async function getBrowsed(req, res) {
 }
 
 export async function getSearched(req, res) {
-  const { term, page = 1 } = req.query;
-  const offset = (page - 1) * 20;
+  const { term, limit = 20, page = 1 } = req.query;
+  const numberLimit = parseInt(limit);
+  const offset = (page - 1) * numberLimit;
   const wildcardTerm = term + "*";
 
   try {
@@ -142,8 +144,8 @@ export async function getSearched(req, res) {
         END, 
         foc_due_date ASC, 
         release_date ASC 
-      LIMIT 20 OFFSET ?`;
-    const values = [wildcardTerm, offset];
+      LIMIT ? OFFSET ?`;
+    const values = [wildcardTerm, numberLimit, offset];
 
     const [results] = await pool.query(sql, values);
 
