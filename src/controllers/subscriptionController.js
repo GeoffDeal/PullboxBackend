@@ -60,3 +60,20 @@ export async function subsToPulls() {
     console.error(err);
   }
 }
+export async function getUserSubs(req, res) {
+  const userId = req.query.id;
+
+  try {
+    const sql =
+      "SELECT name, series_id FROM series INNER JOIN subscriptions ON series.id = subscriptions.series_id WHERE subscriptions.user_id = ?";
+    const [results] = await pool.execute(sql, [userId]);
+
+    if (results.length === 0) {
+      return res.status(204).json({ message: "No subscriptions" });
+    }
+    res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
