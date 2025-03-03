@@ -8,7 +8,7 @@ import {
 const router = express.Router();
 
 router.get("/getproduct/:id", getProduct);
-router.get("/browse/:week/:date/:product/:publisher", getBrowsed);
+router.get("/browse", getBrowsed);
 router.get("/search", getSearched);
 
 export default router;

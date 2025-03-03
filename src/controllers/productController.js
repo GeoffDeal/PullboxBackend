@@ -76,11 +76,13 @@ export async function getProduct(req, res) {
 }
 
 export async function getBrowsed(req, res) {
-  const { week, date, product, publisher } = req.params;
+  const { week, date, product, publisher, page } = req.query;
 
   const weekBegin = new Date(date);
   const weekEnd = new Date(weekBegin);
   weekEnd.setDate(weekEnd.getDate() + 7);
+
+  const offset = (page - 1) * 20;
   try {
     let sql = `SELECT * FROM products WHERE`;
     const params = [weekBegin, weekEnd];
@@ -90,15 +92,26 @@ export async function getBrowsed(req, res) {
     } else {
       sql += " release_date >= ? AND release_date < ?";
     }
-    if (product !== "all") {
+    if (product) {
       sql += ` AND product_type = ?`;
       params.push(product);
     }
-    if (publisher !== "all") {
+    if (publisher) {
       sql += ` AND publisher = ?`;
       params.push(publisher);
     }
-    const [results] = await pool.execute(sql, params);
+    sql += ` ORDER BY 
+        CASE 
+          WHEN foc_due_date >= CURDATE() THEN 1 
+          WHEN release_date >= CURDATE() THEN 2 
+          ELSE 3 
+        END, 
+        foc_due_date ASC, 
+        release_date ASC 
+      LIMIT 20 OFFSET ?`;
+    params.push(offset);
+
+    const [results] = await pool.query(sql, params);
 
     if (results.length === 0) {
       return res.status(204).json({ message: "No results found" });
