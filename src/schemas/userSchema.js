@@ -40,3 +40,25 @@ export const userStatusSchema = yup.object({
     .oneOf(["active", "inactive"], "Invalid option for status")
     .required("New status required"),
 });
+
+export const userUpdateSchema = yup
+  .object({
+    name: yup
+      .string()
+      .min(3, "Name must be at least 3 characters")
+      .max(20, "Name must be no more than 20 characters"),
+    email: yup
+      .string()
+      .email("Invalid email format")
+      .test(
+        "unique-email",
+        "There is already a user with this email",
+        async function (value) {
+          if (!value) return true;
+          return await emailCheck(value);
+        }
+      ),
+    box_number: yup.string().max(4, "Box number is too large"),
+    phone: yup.string(),
+  })
+  .noUnknown(true, "Unknown field present");
