@@ -8,7 +8,7 @@ import {
   updateUser,
 } from "../controllers/userController.js";
 import { validateData } from "../utils/validate.js";
-import { userSchema } from "../models/userModel.js";
+import { userSchema } from "../schemas/userScehma.js";
 
 const router = express.Router();
 
