@@ -13,7 +13,7 @@ async function emailCheck(email) {
   }
 }
 
-export const userSchema = yup.object({
+export const userCreateSchema = yup.object({
   name: yup
     .string()
     .required("Name is required")
@@ -32,4 +32,11 @@ export const userSchema = yup.object({
       }
     ),
   phone: yup.string(),
+});
+
+export const userStatusSchema = yup.object({
+  status: yup
+    .string()
+    .oneOf(["active", "inactive"], "Invalid option for status")
+    .required("New status required"),
 });
