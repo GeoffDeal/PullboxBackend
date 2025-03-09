@@ -6,6 +6,7 @@ import {
   getSearched,
   postExcel,
 } from "../controllers/productController.js";
+import { validateFile } from "../utils/validate.js";
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
@@ -13,6 +14,6 @@ const upload = multer({ dest: "uploads/" });
 router.get("/getproduct/:id", getProduct);
 router.get("/browse", getBrowsed);
 router.get("/search", getSearched);
-router.post("/upload", upload.array("file"), postExcel);
+router.post("/upload", upload.array("file"), validateFile, postExcel);
 
 export default router;
