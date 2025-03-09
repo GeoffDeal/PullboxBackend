@@ -7,7 +7,7 @@ import {
   changeUserStatus,
   updateUser,
 } from "../controllers/userController.js";
-import { validateData } from "../utils/validate.js";
+import { validateData, validateId } from "../utils/validate.js";
 import {
   userCreateSchema,
   userStatusSchema,
@@ -17,9 +17,19 @@ import {
 const router = express.Router();
 
 router.get("/", getAllUsers);
-router.get("/:id(\\d+)", getOneUser);
+router.get("/:id(\\d+)", validateId, getOneUser);
 router.post("/create", validateData(userCreateSchema), createUser);
-router.patch("/status/:id", validateData(userStatusSchema), changeUserStatus);
-router.patch("/update/:id", validateData(userUpdateSchema), updateUser);
+router.patch(
+  "/status/:id",
+  validateId,
+  validateData(userStatusSchema),
+  changeUserStatus
+);
+router.patch(
+  "/update/:id",
+  validateId,
+  validateData(userUpdateSchema),
+  updateUser
+);
 
 export default router;

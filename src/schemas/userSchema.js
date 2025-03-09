@@ -13,33 +13,37 @@ async function emailCheck(email) {
   }
 }
 
-export const userCreateSchema = yup.object({
-  name: yup
-    .string()
-    .required("Name is required")
-    .min(3, "Name must be at least 3 characters long")
-    .max(20, "Name must be less than 20 characters"),
-  email: yup
-    .string()
-    .required("Email is required")
-    .email("Invalid email format")
-    .test(
-      "unique-email",
-      "There is already a user with this email",
-      async function (value) {
-        if (!value) return false;
-        return await emailCheck(value);
-      }
-    ),
-  phone: yup.string(),
-});
+export const userCreateSchema = yup
+  .object({
+    name: yup
+      .string()
+      .required("Name is required")
+      .min(3, "Name must be at least 3 characters long")
+      .max(20, "Name must be less than 20 characters"),
+    email: yup
+      .string()
+      .required("Email is required")
+      .email("Invalid email format")
+      .test(
+        "unique-email",
+        "There is already a user with this email",
+        async function (value) {
+          if (!value) return false;
+          return await emailCheck(value);
+        }
+      ),
+    phone: yup.string(),
+  })
+  .noUnknown(true, "Unknown field present");
 
-export const userStatusSchema = yup.object({
-  status: yup
-    .string()
-    .oneOf(["active", "inactive"], "Invalid option for status")
-    .required("New status required"),
-});
+export const userStatusSchema = yup
+  .object({
+    status: yup
+      .string()
+      .oneOf(["active", "inactive"], "Invalid option for status")
+      .required("New status required"),
+  })
+  .noUnknown(true, "Unknown field present");
 
 export const userUpdateSchema = yup
   .object({
