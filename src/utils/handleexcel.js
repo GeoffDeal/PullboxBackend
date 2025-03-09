@@ -1,12 +1,6 @@
 import ExcelJS from "exceljs";
-import express from "express";
-import multer from "multer";
-import { promises as fs } from "fs";
 import { Product } from "../models/productModel.js";
 import { Series } from "../models/seriesModel.js";
-import { upsertSeries, upsertProduct } from "./productController.js";
-import { subsToPulls } from "./subscriptionController.js";
-const router = express.Router();
 
 export const categoryObj = {
   // Translate from category/sort column of excel
@@ -213,36 +207,7 @@ const bookSort = (bookArray) => {
   return sortedBooks;
 };
 
-// Handle importing excel sheets
-
-const upload = multer({ dest: "uploads/" });
-
-router.post("/upload", upload.array("file"), async (req, res) => {
-  const files = req.files;
-  const filePaths = files.map((file) => file.path);
-  try {
-    const { booksArray, seriesArray } = await processExcel(filePaths);
-
-    await upsertSeries(seriesArray);
-    await upsertProduct(booksArray);
-    await subsToPulls();
-
-    res.status(200).json({ message: "Upload successful" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: `Failed to process files: ${error.message}` });
-  } finally {
-    try {
-      await Promise.all(filePaths.map((path) => fs.unlink(path)));
-      console.log("Excel files deleted");
-    } catch (err) {
-      console.error("Error deleting files: ", err);
-    }
-  }
-});
-
-async function processExcel(filePaths) {
+export async function processExcel(filePaths) {
   const booksArray = [];
   const seriesArray = [];
 
@@ -280,4 +245,3 @@ async function processExcel(filePaths) {
 
   return { booksArray, seriesArray };
 }
-export default router;

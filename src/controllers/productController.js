@@ -1,4 +1,7 @@
 import pool from "../dbConfig.js";
+import { promises as fs } from "fs";
+import { processExcel } from "../utils/handleexcel.js";
+import { subsToPulls } from "./subscriptionController.js";
 import { v4 as uuidv4 } from "uuid";
 import { transformProduct } from "../datatransformers/productTransformers.js";
 
@@ -158,5 +161,32 @@ export async function getSearched(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+// Handle importing excel sheets
+
+export async function postExcel(req, res) {
+  const files = req.files;
+  const filePaths = files.map((file) => file.path);
+  try {
+    const { booksArray, seriesArray } = await processExcel(filePaths);
+
+    await upsertSeries(seriesArray);
+    await upsertProduct(booksArray);
+    await subsToPulls();
+
+    res.status(200).json({ message: "Upload successful" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Failed to process files: ${error.message}` });
+  } finally {
+    try {
+      await Promise.all(filePaths.map((path) => fs.unlink(path)));
+      console.log("Excel files deleted");
+    } catch (err) {
+      console.error("Error deleting files: ", err);
+    }
   }
 }
