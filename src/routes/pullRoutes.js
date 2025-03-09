@@ -7,11 +7,12 @@ import {
   getWeeksPulls,
   removePull,
 } from "../controllers/pullContoller.js";
-import { validateId } from "../utils/validate.js";
+import { validateData, validateId } from "../utils/validate.js";
+import { pullPostSchema } from "../schemas/pullSchema.js";
 
 const router = express.Router();
 
-router.post("/addpull", addPull);
+router.post("/addpull", validateData(pullPostSchema), addPull);
 router.patch("/changepullamount/:id", validateId, changePullAmount);
 router.delete("/removepull/:id", validateId, removePull);
 router.get("/checkpull", checkPull);
