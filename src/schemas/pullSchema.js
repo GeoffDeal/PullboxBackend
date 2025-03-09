@@ -11,3 +11,9 @@ export const pullPostSchema = yup
     productId: yup.number().integer().positive().required(),
   })
   .noUnknown(true, "Unknown field found");
+
+export const pullAmountSchema = yup
+  .object({
+    amount: yup.number().integer().positive().required(),
+  })
+  .noUnknown(true, "Unknown field found");

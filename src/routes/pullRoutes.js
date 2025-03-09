@@ -8,12 +8,17 @@ import {
   removePull,
 } from "../controllers/pullContoller.js";
 import { validateData, validateId } from "../utils/validate.js";
-import { pullPostSchema } from "../schemas/pullSchema.js";
+import { pullAmountSchema, pullPostSchema } from "../schemas/pullSchema.js";
 
 const router = express.Router();
 
 router.post("/addpull", validateData(pullPostSchema), addPull);
-router.patch("/changepullamount/:id", validateId, changePullAmount);
+router.patch(
+  "/changepullamount/:id",
+  validateId,
+  validateData(pullAmountSchema),
+  changePullAmount
+);
 router.delete("/removepull/:id", validateId, removePull);
 router.get("/checkpull", checkPull);
 router.get("/getuserpulls", getUserPulls);
