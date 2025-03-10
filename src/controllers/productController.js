@@ -104,6 +104,7 @@ export async function getBrowsed(req, res) {
       sql += ` AND publisher = ?`;
       params.push(publisher);
     }
+    sql += ` AND (variant = 1 OR variant IS NULL)`;
 
     const countSql = `SELECT COUNT(*) AS totalCount FROM products WHERE` + sql;
     const [countResults] = await pool.query(countSql, params);
