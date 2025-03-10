@@ -1,6 +1,9 @@
 import express from "express";
 import pool from "./src/dbConfig.js";
+import cors from "cors";
+
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
