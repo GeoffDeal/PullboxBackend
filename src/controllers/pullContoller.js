@@ -1,6 +1,6 @@
 import { transformProduct } from "../datatransformers/productTransformers.js";
 import pool from "../dbConfig.js";
-import { calcSunday } from "../utils/timeFunctions.js";
+import { calcSunday, calcWeekEnd } from "../utils/timeFunctions.js";
 
 export async function addPull(req, res) {
   const { userId, productId } = req.body;
@@ -80,8 +80,7 @@ export async function getUserPulls(req, res) {
   const { userId, release } = req.query;
 
   const releaseSunday = calcSunday(release);
-  const weekEnd = new Date(releaseSunday);
-  weekEnd.setDate(weekEnd.getDate() + 7);
+  const weekEnd = calcWeekEnd(releaseSunday);
 
   try {
     const sql = `SELECT * FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id WHERE pulls_list.user_id = ? AND products.release_date >= ? AND products.release_date < ?`;
@@ -104,8 +103,7 @@ export async function getWeeksPulls(req, res) {
   const release = req.query.release;
 
   const releaseSunday = calcSunday(release);
-  const weekEnd = new Date(releaseSunday);
-  weekEnd.setDate(weekEnd.getDate() + 7);
+  const weekEnd = calcWeekEnd(releaseSunday);
 
   try {
     const sql = `SELECT * FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id WHERE products.release_date >= ? AND products.release_date < ?`;
