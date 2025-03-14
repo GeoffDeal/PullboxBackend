@@ -96,7 +96,7 @@ export async function getUserPulls(req, res) {
 }
 
 export async function getWeeksPulls(req, res) {
-  const release = req.body.release;
+  const release = req.query.release;
 
   try {
     const sql = `SELECT * FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id WHERE products.release_date= ?`;
