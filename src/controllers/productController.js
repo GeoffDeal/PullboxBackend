@@ -4,6 +4,7 @@ import { processExcel } from "../utils/handleexcel.js";
 import { subsToPulls } from "./subscriptionController.js";
 import { v4 as uuidv4 } from "uuid";
 import { transformProduct } from "../datatransformers/productTransformers.js";
+import { calcSunday } from "../utils/timeFunctions.js";
 
 export const upsertSeries = async (seriesArray) => {
   try {
@@ -81,7 +82,7 @@ export async function getProduct(req, res) {
 export async function getBrowsed(req, res) {
   const { week, date, product, publisher, limit = 20, page = 1 } = req.query;
 
-  const weekBegin = new Date(date);
+  const weekBegin = calcSunday(date);
   const weekEnd = new Date(weekBegin);
   weekEnd.setDate(weekEnd.getDate() + 7);
 
