@@ -76,7 +76,7 @@ export async function checkPull(req, res) {
 }
 
 export async function getUserPulls(req, res) {
-  const { userId, release } = req.body;
+  const { userId, release } = req.query;
 
   try {
     const sql = `SELECT * FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id WHERE pulls_list.user_id = ? AND products.release_date= ?`;
