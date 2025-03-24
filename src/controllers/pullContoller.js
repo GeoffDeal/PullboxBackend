@@ -11,7 +11,7 @@ export async function addPull(req, res) {
 
     await pool.execute(sql, values);
 
-    const getSql = `SELECT * FROM pulls_list WHERE user_id = ? AND product_id = ?`;
+    const getSql = `SELECT id, amount FROM pulls_list WHERE user_id = ? AND product_id = ?`;
     const [result] = await pool.execute(getSql, values);
 
     if (result.length === 0) {
@@ -68,7 +68,7 @@ export async function checkPull(req, res) {
   const { userId, productId } = req.query;
 
   try {
-    const sql = `SELECT id FROM pulls_list WHERE user_id = ? AND product_id = ?`;
+    const sql = `SELECT id, amount FROM pulls_list WHERE user_id = ? AND product_id = ?`;
     const [result] = await pool.execute(sql, [userId, productId]);
 
     if (result.length !== 0) {
