@@ -4,14 +4,19 @@ import { calcSunday, calcWeekEnd } from "../utils/timeFunctions.js";
 
 export async function addPull(req, res) {
   const { userId, productId } = req.body;
-  console.log(userId, productId);
 
   try {
     const values = [userId, productId];
     const sql = `INSERT IGNORE INTO pulls_list (user_id, product_id) VALUES (?, ?)`;
 
-    const [result] = await pool.execute(sql, values);
+    await pool.execute(sql, values);
 
+    const getSql = `SELECT * FROM pulls_list WHERE user_id = ? AND product_id = ?`;
+    const [result] = await pool.execute(getSql, values);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Could not find new pull" });
+    }
     res.status(201).json(result);
   } catch (err) {
     console.error(err);
@@ -60,7 +65,7 @@ export async function removePull(req, res) {
 }
 
 export async function checkPull(req, res) {
-  const { userId, productId } = req.body;
+  const { userId, productId } = req.query;
 
   try {
     const sql = `SELECT id FROM pulls_list WHERE user_id = ? AND product_id = ?`;
