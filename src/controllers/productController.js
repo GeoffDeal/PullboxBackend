@@ -96,11 +96,11 @@ export async function getBrowsed(req, res) {
     } else {
       sql += " release_date >= ? AND release_date < ?";
     }
-    if (product) {
+    if (product && product !== "All") {
       sql += ` AND product_type = ?`;
       params.push(product);
     }
-    if (publisher) {
+    if (publisher && publisher !== "All") {
       sql += ` AND publisher = ?`;
       params.push(publisher);
     }
