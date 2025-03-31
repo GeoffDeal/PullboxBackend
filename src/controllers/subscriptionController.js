@@ -7,7 +7,10 @@ export async function addSub(req, res) {
 
   try {
     const subSql = `INSERT IGNORE INTO subscriptions (user_id, series_id) VALUES (?, ?)`;
-    const [result] = await pool.execute(subSql, [userId, seriesId]);
+    await pool.execute(subSql, [userId, seriesId]);
+
+    const idSql = `SELECT id FROM subscriptions WHERE user_id = ?  AND series_id =?`;
+    const [idResult] = await pool.execute(idSql, [userId, seriesId]);
 
     const selectSql = `SELECT * FROM products WHERE series_id = ? AND variant = '1' AND printing = '1'`;
     const [selectResult] = await pool.execute(selectSql, [seriesId]);
@@ -16,7 +19,7 @@ export async function addSub(req, res) {
     const pullSql = `INSERT IGNORE INTO pulls_list (user_id, product_id) VALUES ?`;
     await pool.query(pullSql, [pullValues]);
 
-    res.status(201).json(result);
+    res.status(201).json(idResult);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
