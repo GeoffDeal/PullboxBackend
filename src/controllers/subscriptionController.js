@@ -77,3 +77,21 @@ export async function getUserSubs(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+export async function checkSub(req, res) {
+  const { userId, seriesId } = req.query;
+
+  try {
+    const sql = `SELECT id FROM subscriptions WHERE user_id = ? AND series_id = ?`;
+    const [results] = await pool.execute(sql, [userId, seriesId]);
+
+    if (results.length === 0) {
+      return res
+        .status(204)
+        .json({ message: "User is not subscribed to this series" });
+    }
+    res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
