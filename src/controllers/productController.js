@@ -195,11 +195,27 @@ export async function getAllVar(req, res) {
 export async function getSeries(req, res) {
   const seriesId = req.params.id;
   try {
+    const sql = `SELECT * FROM series WHERE id = ?`;
+    const [results] = await pool.execute(sql, [seriesId]);
+
+    if (results.length === 0) {
+      return res.status(400).json({ message: "Series not found" });
+    }
+    res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function getSeriesBooks(req, res) {
+  const seriesId = req.params.id;
+  try {
     const sql = `SELECT * FROM products WHERE series_id = ? AND variant = 1`;
     const [results] = await pool.execute(sql, [seriesId]);
 
     if (results.length === 0) {
-      res.status(400).json({ message: "Series not found" });
+      return res.status(400).json({ message: "Series not found" });
     }
     const formattedData = results.map(transformProduct);
     res.status(200).json(formattedData);
