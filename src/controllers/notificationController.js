@@ -1,4 +1,5 @@
 import pool from "../dbConfig.js";
+import * as yup from "yup";
 import { Notification } from "../models/notificationModel.js";
 
 export async function createNotification(req, res) {
@@ -11,8 +12,20 @@ export async function createNotification(req, res) {
 
     res.status(201).json(results);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    if (err instanceof yup.ValidationError) {
+      res
+        .status(400)
+        .json({
+          success: false,
+          errors: err.inner.map((err) => ({
+            path: err.path,
+            message: err.message,
+          })),
+        });
+    } else {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 }
 

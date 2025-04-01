@@ -147,6 +147,11 @@ export async function getSearched(req, res) {
   const wildcardTerm = term + "*";
 
   try {
+    const countSql = `SELECT COUNT(*) AS totalCount FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE)`;
+    const [countResults] = await pool.query(countSql, [wildcardTerm]);
+    const totalCount = countResults[0].totalCount;
+    const maxPages = Math.ceil(totalCount / numberLimit);
+
     const sql = `SELECT * FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE) 
       ORDER BY 
         CASE 
@@ -166,7 +171,7 @@ export async function getSearched(req, res) {
     }
 
     const formattedData = results.map(transformProduct);
-    res.status(200).json(formattedData);
+    res.status(200).json({ data: formattedData, pages: maxPages });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
