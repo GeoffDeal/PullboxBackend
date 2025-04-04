@@ -68,7 +68,7 @@ export async function getUserSubs(req, res) {
 
   try {
     const sql =
-      "SELECT name, series_id FROM series INNER JOIN subscriptions ON series.id = subscriptions.series_id WHERE subscriptions.user_id = ?";
+      "SELECT * FROM series INNER JOIN subscriptions ON series.id = subscriptions.series_id WHERE subscriptions.user_id = ?";
     const [results] = await pool.execute(sql, [userId]);
 
     if (results.length === 0) {
