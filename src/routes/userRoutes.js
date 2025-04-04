@@ -1,11 +1,11 @@
 // Imports
 import express from "express";
 import {
-  getAllUsers,
   getOneUser,
   createUser,
   changeUserStatus,
   updateUser,
+  getAllCustomers,
 } from "../controllers/userController.js";
 import { validateData, validateId } from "../utils/validate.js";
 import {
@@ -16,7 +16,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", getAllUsers);
+router.get("/customers", getAllCustomers);
 router.get("/:id(\\d+)", validateId, getOneUser);
 router.post("/create", validateData(userCreateSchema), createUser);
 router.patch(

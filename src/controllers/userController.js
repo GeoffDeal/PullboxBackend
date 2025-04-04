@@ -2,9 +2,11 @@ import pool from "../dbConfig.js";
 import { User } from "../models/userModel.js";
 import { transformUser } from "../datatransformers/userTransformer.js";
 
-export async function getAllUsers(req, res) {
+export async function getAllCustomers(req, res) {
   try {
-    const [users] = await pool.execute("SELECT * FROM users");
+    const [users] = await pool.execute(
+      "SELECT * FROM users WHERE customer = true"
+    );
 
     const formattedUsers = users.map((user) => transformUser(user));
     res.status(200).json(formattedUsers);
