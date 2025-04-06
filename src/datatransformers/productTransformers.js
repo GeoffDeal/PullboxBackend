@@ -55,6 +55,8 @@ export const transformWeeksPulls = (pull) => {
     amount: pull.amount,
     pullDate: formattedPull,
     pullId: pull.pulls_list_id,
+    userName: pull.name,
+    userBoxNumber: pull.box_number,
   };
   return transformed;
 };
