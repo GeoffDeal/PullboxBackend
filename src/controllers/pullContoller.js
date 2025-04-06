@@ -108,14 +108,17 @@ export async function getUserPulls(req, res) {
 }
 
 export async function getWeeksPulls(req, res) {
-  const release = req.query.release;
+  const { release, foc } = req.query;
 
-  const releaseSunday = calcSunday(release);
-  const weekEnd = calcWeekEnd(releaseSunday);
+  const dateType = release ? "products.release_date" : "products.foc_due_date";
+
+  const date = release || foc;
+  const weekStart = calcSunday(date);
+  const weekEnd = calcWeekEnd(weekStart);
 
   try {
-    const sql = `SELECT pulls_list.*, pulls_list.id AS pulls_list_id, products.*, users.name, users.box_number FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id INNER JOIN users ON pulls_list.user_id = users.id WHERE products.release_date >= ? AND products.release_date < ?`;
-    const [results] = await pool.execute(sql, [releaseSunday, weekEnd]);
+    const sql = `SELECT pulls_list.*, pulls_list.id AS pulls_list_id, products.*, users.name, users.box_number FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id INNER JOIN users ON pulls_list.user_id = users.id WHERE ${dateType} >= ? AND ${dateType} < ?`;
+    const [results] = await pool.execute(sql, [weekStart, weekEnd]);
 
     if (results.length !== 0) {
       const formattedResults = results.map((product) =>
