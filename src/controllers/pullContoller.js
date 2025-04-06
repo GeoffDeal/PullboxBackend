@@ -1,4 +1,7 @@
-import { transformProduct } from "../datatransformers/productTransformers.js";
+import {
+  transformProduct,
+  transformWeeksPulls,
+} from "../datatransformers/productTransformers.js";
 import pool from "../dbConfig.js";
 import { calcSunday, calcWeekEnd } from "../utils/timeFunctions.js";
 
@@ -116,7 +119,7 @@ export async function getWeeksPulls(req, res) {
 
     if (results.length !== 0) {
       const formattedResults = results.map((product) =>
-        transformProduct(product)
+        transformWeeksPulls(product)
       );
       return res.status(200).json(formattedResults);
     }

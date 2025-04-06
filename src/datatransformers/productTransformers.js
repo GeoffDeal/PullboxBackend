@@ -24,3 +24,37 @@ export const transformProduct = (product) => {
   };
   return transformed;
 };
+
+export const transformWeeksPulls = (pull) => {
+  const releaseDate = new Date(pull.release_date);
+  const formattedRelease = releaseDate.toLocaleDateString("en-CA");
+
+  const focDate = new Date(pull.foc_due_date);
+  const formattedFoc = focDate.toLocaleDateString("en-CA");
+
+  const pullDate = new Date(pull.pull_date);
+  const formattedPull = pullDate.toLocaleDateString("en-CA");
+
+  const transformed = {
+    ID: pull.id,
+    ProductName: pull.product_name,
+    ItemCode: pull.item_code,
+    Sku: pull.sku,
+    MSRP: pull.msrp,
+    Release: formattedRelease,
+    FOCDueDate: formattedFoc,
+    ImageURL: pull.image_url,
+    Issue: pull.issue,
+    Publisher: pull.publisher,
+    ProductType: pull.product_type,
+    SeriesID: pull.series_id,
+    Variant: pull.variant,
+    Printing: pull.printing,
+    Incentive: pull.incentive,
+    userId: pull.user_id,
+    amount: pull.amount,
+    pullDate: formattedPull,
+    pullId: pull.pulls_list_id,
+  };
+  return transformed;
+};
