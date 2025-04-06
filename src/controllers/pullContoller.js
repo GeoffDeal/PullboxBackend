@@ -111,7 +111,7 @@ export async function getWeeksPulls(req, res) {
   const weekEnd = calcWeekEnd(releaseSunday);
 
   try {
-    const sql = `SELECT * FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id WHERE products.release_date >= ? AND products.release_date < ?`;
+    const sql = `SELECT pulls_list.*, pulls_list.id AS pulls_list_id, products.* FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id WHERE products.release_date >= ? AND products.release_date < ?`;
     const [results] = await pool.execute(sql, [releaseSunday, weekEnd]);
 
     if (results.length !== 0) {
