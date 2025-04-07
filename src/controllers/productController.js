@@ -134,7 +134,13 @@ export async function getBrowsed(req, res) {
     const formattedResults = results.map((product) =>
       transformProduct(product)
     );
-    res.status(200).json({ data: formattedResults, pages: maxPages });
+    res.status(200).json({
+      data: formattedResults,
+      meta: {
+        maxPages: maxPages,
+        currentPage: validPage,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -143,15 +149,17 @@ export async function getBrowsed(req, res) {
 
 export async function getSearched(req, res) {
   const { term, limit = 20, page = 1 } = req.query;
-  const numberLimit = parseInt(limit);
-  const offset = (page - 1) * numberLimit;
+
   const wildcardTerm = term + "*";
 
   try {
     const countSql = `SELECT COUNT(*) AS totalCount FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE)`;
     const [countResults] = await pool.query(countSql, [wildcardTerm]);
+    const numberLimit = parseInt(limit);
     const totalCount = countResults[0].totalCount;
     const maxPages = Math.ceil(totalCount / numberLimit);
+    const validPage = Math.min(page, maxPages);
+    const offset = (validPage - 1) * numberLimit;
 
     const sql = `SELECT * FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE) 
       ORDER BY 
@@ -172,7 +180,13 @@ export async function getSearched(req, res) {
     }
 
     const formattedData = results.map(transformProduct);
-    res.status(200).json({ data: formattedData, pages: maxPages });
+    res.status(200).json({
+      data: formattedData,
+      meta: {
+        maxPages: maxPages,
+        currentPage: validPage,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
