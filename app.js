@@ -116,6 +116,9 @@ app.use("/notifications", notificationRouter);
 import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
 app.use("/storeinfo", storeInfoRouter);
 
+import priceAdjustmentRouter from "./src/routes/priceAdjustmentRoutes.js";
+app.use("/priceadjustments", priceAdjustmentRouter);
+
 // Listening
 app.listen(3000, () => {
   console.log("Server running");
