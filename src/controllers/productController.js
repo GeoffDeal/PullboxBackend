@@ -85,8 +85,6 @@ export async function getBrowsed(req, res) {
   const weekBegin = calcSunday(date);
   const weekEnd = calcWeekEnd(weekBegin);
 
-  const numberLimit = parseInt(limit);
-  const offset = (page - 1) * numberLimit;
   try {
     let sql = ``;
     const params = [weekBegin, weekEnd];
@@ -108,8 +106,11 @@ export async function getBrowsed(req, res) {
 
     const countSql = `SELECT COUNT(*) AS totalCount FROM products WHERE` + sql;
     const [countResults] = await pool.query(countSql, params);
+    const numberLimit = parseInt(limit);
     const totalCount = countResults[0].totalCount;
     const maxPages = Math.ceil(totalCount / numberLimit);
+    const validPage = Math.min(page, maxPages);
+    const offset = (validPage - 1) * numberLimit;
 
     let querySql = `SELECT * FROM products WHERE`;
     querySql += sql;
