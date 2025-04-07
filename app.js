@@ -113,8 +113,8 @@ app.use("/pulls/", pullRouter);
 import notificationRouter from "./src/routes/notificationRoutes.js";
 app.use("/notifications", notificationRouter);
 
-// import excelRouter from "./src/controllers/handleexcel.js";
-// app.use("/excel/", excelRouter);
+import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
+app.use("/storeinfo", storeInfoRouter);
 
 // Listening
 app.listen(3000, () => {
