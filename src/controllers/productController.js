@@ -84,7 +84,7 @@ export async function getBrowsed(req, res) {
 
   const weekBegin = calcSunday(date);
   const weekEnd = calcWeekEnd(weekBegin);
-
+  console.log(req.query, weekBegin);
   try {
     let sql = ``;
     const params = [weekBegin, weekEnd];
@@ -107,9 +107,10 @@ export async function getBrowsed(req, res) {
     const countSql = `SELECT COUNT(*) AS totalCount FROM products WHERE` + sql;
     const [countResults] = await pool.query(countSql, params);
     const numberLimit = parseInt(limit);
+    const numberPage = parseInt(page);
     const totalCount = countResults[0].totalCount;
     const maxPages = Math.ceil(totalCount / numberLimit);
-    const validPage = Math.min(page, maxPages);
+    const validPage = maxPages === 0 ? 1 : Math.min(numberPage, maxPages);
     const offset = (validPage - 1) * numberLimit;
 
     let querySql = `SELECT * FROM products WHERE`;
@@ -156,9 +157,10 @@ export async function getSearched(req, res) {
     const countSql = `SELECT COUNT(*) AS totalCount FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE)`;
     const [countResults] = await pool.query(countSql, [wildcardTerm]);
     const numberLimit = parseInt(limit);
+    const numberPage = parseInt(page);
     const totalCount = countResults[0].totalCount;
     const maxPages = Math.ceil(totalCount / numberLimit);
-    const validPage = Math.min(page, maxPages);
+    const validPage = maxPages === 0 ? 1 : Math.min(numberPage, maxPages);
     const offset = (validPage - 1) * numberLimit;
 
     const sql = `SELECT * FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE) 
