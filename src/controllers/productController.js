@@ -84,7 +84,6 @@ export async function getBrowsed(req, res) {
 
   const weekBegin = calcSunday(date);
   const weekEnd = calcWeekEnd(weekBegin);
-  console.log(req.query, weekBegin);
   try {
     let sql = ``;
     const params = [weekBegin, weekEnd];
@@ -129,7 +128,12 @@ export async function getBrowsed(req, res) {
     const [results] = await pool.query(querySql, params);
 
     if (results.length === 0) {
-      return res.status(204).json({ message: "No results found" });
+      return res
+        .status(204)
+        .json({
+          message: "No results found",
+          meta: { maxPages: 1, currentPage: 1 },
+        });
     }
 
     const formattedResults = results.map((product) =>
