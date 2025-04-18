@@ -88,8 +88,9 @@ const tableCheck = async () => {
 tableCheck();
 
 // Close pool on exit
-process.on("SIGINT", async () => {
+const closePool = async (signal) => {
   try {
+    console.log(`Received signal: ${signal}`);
     await pool.end();
     console.log("Pool Closed");
   } catch (err) {
@@ -97,7 +98,9 @@ process.on("SIGINT", async () => {
   } finally {
     process.exit(0);
   }
-});
+};
+process.on("SIGINT", () => closePool("SIGINT"));
+process.on("SIGTERM", () => closePool("SIGTERM"));
 
 // Routes
 import productRouter from "./src/routes/productRoutes.js";
