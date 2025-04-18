@@ -17,10 +17,16 @@ app.use(express.json());
 
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception:", err);
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
 });
 
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
 });
 
 app.get("/", (req, res) => {
