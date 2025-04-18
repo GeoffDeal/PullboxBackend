@@ -12,7 +12,11 @@ import { pullAmountSchema, pullPostSchema } from "../schemas/pullSchema.js";
 
 const router = express.Router();
 
-router.post("/addpull", validateData(pullPostSchema), addPull);
+// router.post("/addpull", validateData(pullPostSchema), addPull);
+router.post("/addpull", (req, res) => {
+  console.log("Add pull hit", req.body);
+  res.json({ success: true });
+});
 router.patch(
   "/changepullamount/:id",
   validateId,
