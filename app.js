@@ -1,6 +1,13 @@
 import express from "express";
 import pool from "./src/dbConfig.js";
 import cors from "cors";
+import productRouter from "./src/routes/productRoutes.js";
+import userRouter from "./src/routes/userRoutes.js";
+import subscriptionRouter from "./src/routes/subscriptionRoutes.js";
+import pullRouter from "./src/routes/pullRoutes.js";
+import notificationRouter from "./src/routes/notificationRoutes.js";
+import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
+import priceAdjustmentRouter from "./src/routes/priceAdjustmentRoutes.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -22,6 +29,7 @@ app.get("/", (req, res) => {
 
 // Check for tables
 const tableCheck = async () => {
+  console.log("Checking tables...");
   try {
     await pool.execute(`CREATE TABLE IF NOT EXISTS users(
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -89,11 +97,15 @@ const tableCheck = async () => {
       CONSTRAINT pulls_list_fk2 FOREIGN KEY (product_id) REFERENCES products(id) ON UPDATE CASCADE ON DELETE CASCADE,
       CONSTRAINT unique_pull UNIQUE (user_id, product_id)
     );`);
+    console.log("Check complete");
   } catch (err) {
     console.error("Problem checking tables: ", err);
+    setTimeout(() => {
+      process.exit(1);
+    }, 1000``);
   }
 };
-tableCheck();
+await tableCheck();
 
 // Close pool on exit
 const closePool = async (signal) => {
@@ -104,32 +116,28 @@ const closePool = async (signal) => {
   } catch (err) {
     console.error("Error closing pool: ", err);
   } finally {
-    process.exit(0);
+    setTimeout(() => {
+      process.exit(0);
+    }, 1000);
   }
 };
 process.on("SIGINT", () => closePool("SIGINT"));
 process.on("SIGTERM", () => closePool("SIGTERM"));
 
 // Routes
-import productRouter from "./src/routes/productRoutes.js";
+
 app.use("/products/", productRouter);
 
-import userRouter from "./src/routes/userRoutes.js";
 app.use("/users/", userRouter);
 
-import subscriptionRouter from "./src/routes/subscriptionRoutes.js";
 app.use("/subs/", subscriptionRouter);
 
-import pullRouter from "./src/routes/pullRoutes.js";
 app.use("/pulls/", pullRouter);
 
-import notificationRouter from "./src/routes/notificationRoutes.js";
 app.use("/notifications", notificationRouter);
 
-import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
 app.use("/storeinfo", storeInfoRouter);
 
-import priceAdjustmentRouter from "./src/routes/priceAdjustmentRoutes.js";
 app.use("/priceadjustments", priceAdjustmentRouter);
 
 // Listening
