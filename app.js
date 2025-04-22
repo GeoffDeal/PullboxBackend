@@ -117,7 +117,6 @@ const tableCheck = async () => {
     }, 1000``);
   }
 };
-await tableCheck();
 
 // Close pool on exit
 const closePool = async (signal) => {
@@ -157,3 +156,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("Server running");
 });
+
+await tableCheck();
