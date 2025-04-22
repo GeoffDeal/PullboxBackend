@@ -11,7 +11,6 @@ import { validateData, validateId } from "../utils/validate.js";
 import { pullAmountSchema, pullPostSchema } from "../schemas/pullSchema.js";
 
 const router = express.Router();
-console.log("Pulls hit");
 
 router.post("/addpull", validateData(pullPostSchema), addPull);
 // router.post("/addpull", (req, res) => {

@@ -112,9 +112,6 @@ const tableCheck = async () => {
     console.log("Check complete");
   } catch (err) {
     console.error("Problem checking tables: ", err);
-    setTimeout(() => {
-      process.exit(1);
-    }, 1000``);
   }
 };
 
@@ -157,4 +154,4 @@ app.listen(port, () => {
   console.log("Server running");
 });
 
-await tableCheck();
+// tableCheck();
