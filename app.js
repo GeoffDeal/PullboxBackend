@@ -1,6 +1,5 @@
 import express from "express";
 import pool from "./src/dbConfig.js";
-import cors from "cors";
 import productRouter from "./src/routes/productRoutes.js";
 import userRouter from "./src/routes/userRoutes.js";
 import subscriptionRouter from "./src/routes/subscriptionRoutes.js";
@@ -8,10 +7,11 @@ import pullRouter from "./src/routes/pullRoutes.js";
 import notificationRouter from "./src/routes/notificationRoutes.js";
 import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
 import priceAdjustmentRouter from "./src/routes/priceAdjustmentRoutes.js";
-import dotenv from "dotenv";
-dotenv.config();
+import cors from "cors";
+import { clerkMiddleware } from "@clerk/express";
 
 const app = express();
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "*",
@@ -20,20 +20,11 @@ app.use(
   })
 );
 app.use(express.json());
-
-// process.on("uncaughtException", (err) => {
-//   console.error("Uncaught Exception:", err);
-//   setTimeout(() => {
-//     process.exit(1);
-//   }, 1000);
-// });
-
-// process.on("unhandledRejection", (reason) => {
-//   console.error("Unhandled Rejection:", reason);
-//   setTimeout(() => {
-//     process.exit(1);
-//   }, 1000);
-// });
+app.use(
+  clerkMiddleware({
+    apiKey: process.env.CLERK_SECRET_KEY,
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");

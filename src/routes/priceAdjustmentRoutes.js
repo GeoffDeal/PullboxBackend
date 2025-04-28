@@ -3,10 +3,11 @@ import {
   readAdjustments,
   updateAdjustments,
 } from "../controllers/priceAdjustmentController.js";
+import { checkAdmin } from "../utils/authChecks.js";
 
 const router = express.Router();
 
 router.get("/", readAdjustments);
-router.put("/updateadjustments", updateAdjustments);
+router.put("/updateadjustments", checkAdmin, updateAdjustments);
 
 export default router;

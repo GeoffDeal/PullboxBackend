@@ -10,6 +10,7 @@ import {
   postExcel,
 } from "../controllers/productController.js";
 import { validateFile } from "../utils/validate.js";
+import { checkAdmin } from "../utils/authChecks.js";
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
@@ -20,6 +21,12 @@ router.get("/search", getSearched);
 router.get("/getvariants", getAllVar);
 router.get("/getseries/:id", getSeries);
 router.get("/getseriesbooks/:id", getSeriesBooks);
-router.post("/upload", upload.array("file"), validateFile, postExcel);
+router.post(
+  "/upload",
+  upload.array("file"),
+  checkAdmin,
+  validateFile,
+  postExcel
+);
 
 export default router;

@@ -13,20 +13,23 @@ import {
   userStatusSchema,
   userUpdateSchema,
 } from "../schemas/userSchema.js";
+import { checkAdmin, checkSignIn } from "../utils/authChecks.js";
 
 const router = express.Router();
 
-router.get("/customers", getAllCustomers);
-router.get("/:id(\\d+)", validateId, getOneUser);
+router.get("/customers", checkAdmin, getAllCustomers);
+router.get("/:id(\\d+)", checkSignIn, validateId, getOneUser);
 router.post("/create", validateData(userCreateSchema), createUser);
 router.patch(
   "/status/:id",
+  checkAdmin,
   validateId,
   validateData(userStatusSchema),
   changeUserStatus
 );
 router.patch(
   "/update/:id",
+  checkSignIn,
   validateId,
   validateData(userUpdateSchema),
   updateUser
