@@ -7,6 +7,7 @@ import pullRouter from "./src/routes/pullRoutes.js";
 import notificationRouter from "./src/routes/notificationRoutes.js";
 import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
 import priceAdjustmentRouter from "./src/routes/priceAdjustmentRoutes.js";
+import webhookRouter from "./src/routes/webhookRoutes.js";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
 
@@ -19,13 +20,24 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
-app.use(
-  clerkMiddleware({
-    apiKey: process.env.CLERK_SECRET_KEY,
-  })
-);
+// app.use(
+//   clerkMiddleware({
+//     apiKey: process.env.CLERK_SECRET_KEY,
+//   })
+// );
+app.use((req, res, next) => {
+  const isPublic = req.path.startsWith("/api/webhooks/");
+  if (isPublic) return next();
+  return clerkMiddleware({ apiKey: process.env.CLERK_SECRET_KEY })(
+    req,
+    res,
+    next
+  );
+});
+app.use("/api/webhooks", express.raw({ type: "application/json" }));
+app.use("/api/webhooks", webhookRouter);
 
+app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
@@ -36,11 +48,7 @@ const tableCheck = async () => {
   try {
     await pool.execute(`CREATE TABLE IF NOT EXISTS users(
       id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      email VARCHAR(100) NOT NULL UNIQUE,
       box_number INT,
-      phone VARCHAR(100),
-      customer TINYINT(1) NOT NULL,
       status VARCHAR(100) 
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS notifications (
