@@ -18,7 +18,7 @@ import { checkAdmin, checkSignIn } from "../utils/authChecks.js";
 const router = express.Router();
 
 router.get("/customers", checkAdmin, getAllCustomers);
-router.get("/:id(\\d+)", checkSignIn, validateId, getOneUser);
+router.get("/:id", checkSignIn, validateId, getOneUser);
 router.post("/create", validateData(userCreateSchema), createUser);
 router.patch(
   "/status/:id",

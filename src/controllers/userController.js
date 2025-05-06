@@ -31,12 +31,11 @@ export async function getAllCustomers(req, res) {
 export async function getOneUser(req, res) {
   try {
     const userId = req.params.id;
-    const [pbUser] = await pool.execute("SELECT * FROM users WHERE ID = ?", [
+    const [pbUser] = await pool.execute("SELECT * FROM users WHERE id = ?", [
       userId,
     ]);
-    const [clerkUser] = await clerkClient.users.getUser(userId);
+    const clerkUser = await clerkClient.users.getUser(userId);
     const formattedUser = transformUser(clerkUser, pbUser[0]);
-    console.log(pbUser, clerkUser, formattedUser);
     res.status(200).json(formattedUser);
   } catch (err) {
     console.error(err);
