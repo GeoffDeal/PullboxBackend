@@ -20,11 +20,6 @@ app.use(
     credentials: true,
   })
 );
-// app.use(
-//   clerkMiddleware({
-//     apiKey: process.env.CLERK_SECRET_KEY,
-//   })
-// );
 app.use((req, res, next) => {
   const isPublic = req.path.startsWith("/api/webhooks/");
   if (isPublic) return next();
@@ -47,7 +42,7 @@ const tableCheck = async () => {
   console.log("Checking tables...");
   try {
     await pool.execute(`CREATE TABLE IF NOT EXISTS users(
-      id INT AUTO_INCREMENT PRIMARY KEY,
+      id VARCHAR(100) PRIMARY KEY,
       box_number INT,
       status VARCHAR(100) 
     );`);
@@ -92,7 +87,7 @@ const tableCheck = async () => {
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS subscriptions (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id VARCHAR(100) NOT NULL,
       series_id VARCHAR(225) NOT NULL,
       CONSTRAINT subscriptions_fk1 FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
       CONSTRAINT subscriptions_fk2 FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -100,7 +95,7 @@ const tableCheck = async () => {
     );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS pulls_list (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id VARCHAR(100) NOT NULL,
       product_id INT NOT NULL,
       amount INT NOT NULL DEFAULT 1,
       pull_date DATE NOT NULL DEFAULT (CURRENT_DATE),

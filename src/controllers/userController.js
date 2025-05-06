@@ -1,6 +1,6 @@
 import pool from "../dbConfig.js";
 import { verifyWebhook } from "@clerk/express/webhooks";
-import { User } from "../models/userModel.js";
+// import { User } from "../models/userModel.js";
 import { transformUser } from "../datatransformers/userTransformer.js";
 
 export async function getAllCustomers(req, res) {
@@ -32,15 +32,14 @@ export async function getOneUser(req, res) {
 export async function createUser(req, res) {
   try {
     const verified = await verifyWebhook(req);
-    console.log("Create user hit ", verified);
     // const newUser = new User(req.body);
-    // const userValues = newUser.arrayFormat();
+    const userValues = [verified.data.id, "pending"];
 
-    // const [result] = await pool.execute(
-    //   "INSERT INTO users (name, email, phone, customer, status) VALUES (?, ?, ?, ?, ?)",
-    //   userValues
-    // );
-    // res.status(201).send(result);
+    const [result] = await pool.execute(
+      "INSERT INTO users (id, status) VALUES (?, ?)",
+      userValues
+    );
+    res.status(201).send(result);
   } catch (err) {
     res
       .status(500)
