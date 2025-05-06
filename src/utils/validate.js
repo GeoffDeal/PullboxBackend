@@ -14,7 +14,10 @@ export const validateData = (schema) => async (req, res, next) => {
 };
 
 const idSchema = yup.object({
-  id: yup.number().integer().positive().required(),
+  id: yup
+    .string()
+    .matches(/^user_[a-zA-Z0-9]+$/, "Invalid user ID format")
+    .required(),
 });
 export const validateId = async (req, res, next) => {
   try {
