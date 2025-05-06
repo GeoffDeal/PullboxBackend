@@ -1,12 +1,10 @@
-export const transformUser = (user) => {
+export const transformUser = (clerkUser, pbUser) => {
   const transformed = {
-    id: user.id,
-    boxNumber: user.box_number,
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    customer: user.customer === 1,
-    customerType: user.status,
+    id: clerkUser.id,
+    boxNumber: pbUser.box_number,
+    name: clerkUser.firstName + " " + clerkUser.lastName,
+    email: clerkUser.emailAddresses[0].emailAddress,
+    customerType: pbUser.status,
   };
   return transformed;
 };

@@ -1,31 +1,46 @@
 import pool from "../dbConfig.js";
+import { clerkClient } from "@clerk/express";
 import { verifyWebhook } from "@clerk/express/webhooks";
 // import { User } from "../models/userModel.js";
 import { transformUser } from "../datatransformers/userTransformer.js";
 
 export async function getAllCustomers(req, res) {
   try {
-    const [users] = await pool.execute(
-      "SELECT * FROM users WHERE customer = true"
-    );
+    const [pbUsers] = await pool.execute("SELECT * FROM users");
+    const clerkUsers = await clerkClient.users.getUserList();
 
-    const formattedUsers = users.map((user) => transformUser(user));
+    const pbUserMap = new Map();
+    pbUsers.forEach((pbUser) => {
+      pbUserMap.set(pbUser.id, pbUser);
+    });
+    const formattedUsers = clerkUsers.data
+      .map((clerkUser) => {
+        const pbUser = pbUserMap.get(clerkUser.id);
+        if (!pbUser) return null;
+        return transformUser(clerkUser, pbUser);
+      })
+      .filter(Boolean);
+
     res.status(200).json(formattedUsers);
   } catch (err) {
     console.error(err);
+    res.status(500).json({ error: "Problem fetching customers" });
   }
 }
 
 export async function getOneUser(req, res) {
   try {
     const userId = req.params.id;
-    const [user] = await pool.execute("SELECT * FROM users WHERE ID = ?", [
+    const [pbUser] = await pool.execute("SELECT * FROM users WHERE ID = ?", [
       userId,
     ]);
-    const formattedUser = transformUser(user[0]);
+    const [clerkUser] = await clerkClient.users.getUser(userId);
+    const formattedUser = transformUser(clerkUser, pbUser[0]);
+    console.log(pbUser, clerkUser, formattedUser);
     res.status(200).json(formattedUser);
   } catch (err) {
     console.error(err);
+    res.status(500).json({ error: "Problem fetching customer" });
   }
 }
 
