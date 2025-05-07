@@ -45,6 +45,16 @@ export const userStatusSchema = yup
   })
   .noUnknown(true, "Unknown field present");
 
+export const userBoxSchema = yup
+  .object({
+    boxNumber: yup
+      .number()
+      .integer()
+      .positive()
+      .required("New number required"),
+  })
+  .noUnknown(true, "Unknown field present");
+
 export const userUpdateSchema = yup
   .object({
     name: yup

@@ -68,7 +68,25 @@ export async function changeUserStatus(req, res) {
     const sql = `UPDATE users SET status = ? WHERE id = ?`;
     const [result] = await pool.execute(sql, [newStatus, userId]);
 
-    if (result.affectRows === 0) {
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "User status updated" });
+  } catch (err) {
+    console.error("Error updating status: ", err);
+    res.status(500).json({ error: "Internal server error " });
+  }
+}
+
+export async function changeUserBox(req, res) {
+  const userId = req.params.id;
+  const newNumber = req.body.boxNumber;
+  try {
+    const sql = `UPDATE users SET box_number = ? WHERE id = ?`;
+    const [result] = await pool.execute(sql, [newNumber, userId]);
+
+    if (result.affectedRows === 0) {
       return res.status(404).json({ error: "User not found" });
     }
 

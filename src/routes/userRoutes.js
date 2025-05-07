@@ -6,9 +6,11 @@ import {
   changeUserStatus,
   updateUser,
   getAllCustomers,
+  changeUserBox,
 } from "../controllers/userController.js";
 import { validateData, validateId } from "../utils/validate.js";
 import {
+  userBoxSchema,
   userCreateSchema,
   userStatusSchema,
   userUpdateSchema,
@@ -26,6 +28,13 @@ router.patch(
   validateId,
   validateData(userStatusSchema),
   changeUserStatus
+);
+router.patch(
+  "/boxnumber/:id",
+  checkAdmin,
+  validateId,
+  validateData(userBoxSchema),
+  changeUserBox
 );
 router.patch(
   "/update/:id",
