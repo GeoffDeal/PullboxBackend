@@ -7,13 +7,27 @@ import { transformUser } from "../datatransformers/userTransformer.js";
 export async function getAllCustomers(req, res) {
   try {
     const [pbUsers] = await pool.execute("SELECT * FROM users");
-    const clerkUsers = await clerkClient.users.getUserList();
 
     const pbUserMap = new Map();
     pbUsers.forEach((pbUser) => {
       pbUserMap.set(pbUser.id, pbUser);
     });
-    const formattedUsers = clerkUsers.data
+
+    const allClerkUsers = [];
+    const limit = 100;
+    let offset = 0;
+    let done = false;
+    while (!done) {
+      const clerkRes = await clerkClient.users.getUserList({ limit, offset });
+      allClerkUsers.push(...clerkRes.data);
+      if (clerkRes.data.length < limit) {
+        done = true;
+      } else {
+        offset += limit;
+      }
+    }
+
+    const formattedUsers = allClerkUsers
       .map((clerkUser) => {
         const pbUser = pbUserMap.get(clerkUser.id);
         if (!pbUser) return null;

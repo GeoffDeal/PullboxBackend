@@ -142,7 +142,10 @@ export async function getWeeksPulls(req, res) {
 
     const clerkUsers = [];
     for (const chunk of chunkedIds(userIds, 100)) {
-      const clerkRes = await clerkClient.users.getUserList({ userId: chunk });
+      const clerkRes = await clerkClient.users.getUserList({
+        userId: chunk,
+        limit: 100,
+      });
       clerkUsers.push(...clerkRes.data);
     }
 
