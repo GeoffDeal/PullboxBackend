@@ -128,12 +128,10 @@ export async function getBrowsed(req, res) {
     const [results] = await pool.query(querySql, params);
 
     if (results.length === 0) {
-      return res
-        .status(204)
-        .json({
-          message: "No results found",
-          meta: { maxPages: 1, currentPage: 1 },
-        });
+      return res.status(204).json({
+        message: "No results found",
+        meta: { maxPages: 1, currentPage: 1 },
+      });
     }
 
     const formattedResults = results.map((product) =>
@@ -254,10 +252,29 @@ export async function getSeriesBooks(req, res) {
 // Handle importing excel sheets
 
 export async function postExcel(req, res) {
+  const body = req.body;
   const files = req.files;
-  const filePaths = files.map((file) => file.path);
+  const filePaths = [];
+  const publishers = [];
+
+  console.log("Request body:", body);
+  console.log("Uploaded files:", files);
+
   try {
-    const { booksArray, seriesArray } = await processExcel(filePaths);
+    for (const [index, file] of files.entries()) {
+      const publisher = body.uploads[index]?.publisher;
+      if (!publisher) {
+        throw new Error(`Missing publisher for file at index ${index}`);
+      }
+
+      filePaths.push(file.path);
+      publishers.push(publisher);
+    }
+
+    const { booksArray, seriesArray } = await processExcel(
+      filePaths,
+      publishers
+    );
 
     await upsertSeries(seriesArray);
     await upsertProduct(booksArray);
@@ -265,6 +282,7 @@ export async function postExcel(req, res) {
 
     res.status(200).json({ message: "Upload successful" });
   } catch (error) {
+    console.error("Error processing files:", error); // Log the error
     res
       .status(500)
       .json({ error: `Failed to process files: ${error.message}` });
@@ -273,7 +291,7 @@ export async function postExcel(req, res) {
       await Promise.all(filePaths.map((path) => fs.unlink(path)));
       console.log("Excel files deleted");
     } catch (err) {
-      console.error("Error deleting files: ", err);
+      console.error("Error deleting files:", err);
     }
   }
 }

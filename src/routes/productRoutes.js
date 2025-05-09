@@ -21,12 +21,6 @@ router.get("/search", getSearched);
 router.get("/getvariants", getAllVar);
 router.get("/getseries/:id", getSeries);
 router.get("/getseriesbooks/:id", getSeriesBooks);
-router.post(
-  "/upload",
-  upload.array("file"),
-  checkAdmin,
-  validateFile,
-  postExcel
-);
+router.post("/upload", upload.any(), checkAdmin, validateFile, postExcel);
 
 export default router;

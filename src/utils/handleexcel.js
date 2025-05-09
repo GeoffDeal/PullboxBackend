@@ -207,7 +207,7 @@ const bookSort = (bookArray) => {
   return sortedBooks;
 };
 
-export async function processExcel(filePaths) {
+export async function processExcel(filePaths, publisherArray) {
   const booksArray = [];
   const seriesArray = [];
 
@@ -219,20 +219,11 @@ export async function processExcel(filePaths) {
       workbook.removeWorksheet(2); //Clear useless sheets and rows
       workbook.worksheets[0].spliceRows(1, 1);
 
-      const worksheetName = workbook.worksheets[0].name;
-      const firstCut = worksheetName.indexOf("(") + 1;
-      const secondCut = worksheetName.indexOf(" ", firstCut);
-
-      const publisherName = worksheetName
-        .slice(firstCut, secondCut)
-        .toLocaleLowerCase();
-
-      const capitalName =
-        publisherName.charAt(0).toLocaleUpperCase() + publisherName.slice(1);
+      const publisherName = publisherArray[i];
 
       const { newBooks, seriesList } = await xlsxToObjects(
         workbook,
-        capitalName
+        publisherName
       );
 
       booksArray.push(...newBooks);
