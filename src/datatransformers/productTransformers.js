@@ -25,7 +25,7 @@ export const transformProduct = (product) => {
   return transformed;
 };
 
-export const transformWeeksPulls = (pull) => {
+export const transformWeeksPulls = (pull, name) => {
   const releaseDate = new Date(pull.release_date);
   const formattedRelease = releaseDate.toLocaleDateString("en-CA");
 
@@ -55,7 +55,7 @@ export const transformWeeksPulls = (pull) => {
     amount: pull.amount,
     pullDate: formattedPull,
     pullId: pull.pulls_list_id,
-    userName: pull.name,
+    userName: name,
     userBoxNumber: pull.box_number,
   };
   return transformed;

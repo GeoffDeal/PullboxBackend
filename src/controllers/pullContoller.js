@@ -4,6 +4,7 @@ import {
 } from "../datatransformers/productTransformers.js";
 import pool from "../dbConfig.js";
 import { calcSunday, calcWeekEnd } from "../utils/timeFunctions.js";
+import { clerkClient } from "@clerk/express";
 
 export async function addPull(req, res) {
   const { userId, productId } = req.body;
@@ -117,16 +118,44 @@ export async function getWeeksPulls(req, res) {
   const weekEnd = calcWeekEnd(weekStart);
 
   try {
-    const sql = `SELECT pulls_list.*, pulls_list.id AS pulls_list_id, products.*, users.name, users.box_number FROM products INNER JOIN pulls_list ON products.id = pulls_list.product_id INNER JOIN users ON pulls_list.user_id = users.id WHERE ${dateType} >= ? AND ${dateType} < ?`;
+    const sql = `
+      SELECT pulls_list.*, pulls_list.id AS pulls_list_id, 
+            products.*, users.id, users.box_number 
+      FROM products 
+      INNER JOIN pulls_list ON products.id = pulls_list.product_id 
+      INNER JOIN users ON pulls_list.user_id = users.id 
+      WHERE ${dateType} >= ? 
+        AND ${dateType} < ? 
+        AND users.status = 'active'
+      `;
+
     const [results] = await pool.execute(sql, [weekStart, weekEnd]);
 
-    if (results.length !== 0) {
-      const formattedResults = results.map((product) =>
-        transformWeeksPulls(product)
+    if (results.length === 0) return res.status(204).send();
+
+    const userIds = [...new Set(results.map((r) => r.id))];
+
+    const chunkedIds = (arr, size) =>
+      Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+        arr.slice(i * size, i * size + size)
       );
-      return res.status(200).json(formattedResults);
+
+    const clerkUsers = [];
+    for (const chunk of chunkedIds(userIds, 100)) {
+      const clerkRes = await clerkClient.users.getUserList({ userId: chunk });
+      clerkUsers.push(...clerkRes.data);
     }
-    res.status(204).send();
+
+    const userMap = {};
+    clerkUsers.forEach((user) => {
+      userMap[user.id] = user.firstName + " " + user.lastName;
+    });
+    const formattedResults = results.map((product) => {
+      const name = userMap[product.id] || "Unknown User";
+      return transformWeeksPulls(product, name);
+    });
+
+    return res.status(200).json(formattedResults);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
