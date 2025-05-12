@@ -1,7 +1,6 @@
 import pool from "../dbConfig.js";
 import { clerkClient } from "@clerk/express";
 import { verifyWebhook } from "@clerk/express/webhooks";
-// import { User } from "../models/userModel.js";
 import { transformUser } from "../datatransformers/userTransformer.js";
 
 export async function getAllCustomers(req, res) {
@@ -60,7 +59,6 @@ export async function getOneUser(req, res) {
 export async function createUser(req, res) {
   try {
     const verified = await verifyWebhook(req);
-    // const newUser = new User(req.body);
     const userValues = [verified.data.id, "pending"];
 
     const [result] = await pool.execute(

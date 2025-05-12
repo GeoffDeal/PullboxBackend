@@ -257,9 +257,6 @@ export async function postExcel(req, res) {
   const filePaths = [];
   const publishers = [];
 
-  console.log("Request body:", body);
-  console.log("Uploaded files:", files);
-
   try {
     for (const [index, file] of files.entries()) {
       const publisher = body.uploads[index]?.publisher;

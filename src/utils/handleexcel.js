@@ -84,51 +84,48 @@ async function xlsxToObjects(workbook, publisher) {
         if (formattedKey) book[formattedKey] = rowList[index];
       });
 
-      book.setIssue = book["productName"];
+      book.setIssue = book.productName;
 
-      book["publisher"] = publisher;
+      book.publisher = publisher;
 
       if (category.includes("1:")) {
-        book["productType"] = "Incentive";
-        book["incentive"] = category;
+        book.productType = "Incentive";
+        book.incentive = category;
       } else {
-        book["productType"] = categoryObj[category] || "Remove";
+        book.productType = categoryObj[category] || "Remove";
       }
-      if (book["productType"] === "Remove") {
+      if (book.productType === "Remove") {
         return;
       }
 
-      if (
-        book["productType"] === "Comic" ||
-        book["productType"] === "Incentive"
-      ) {
+      if (book.productType === "Comic" || book.productType === "Incentive") {
         // Handle series, variant, and printing info for comics
 
-        book["variant"] = book["sku"].slice(15, 16);
-        book["printing"] = book["sku"].slice(16);
+        book.variant = book.sku.slice(15, 16);
+        book.printing = book.sku.slice(16);
 
         if (!series.some((obj) => obj.skus.includes(book.seriesSku))) {
-          const seriesObj = new Series(book["publisher"], [book.seriesSku]);
-          seriesObj.properTitle = book["productName"];
+          const seriesObj = new Series(book.publisher, [book.seriesSku]);
+          seriesObj.properTitle = book.productName;
           series.push(seriesObj);
         }
       }
 
       if (
-        book["publisher"] === "Marvel" &&
-        (book["productType"] === "Comic" || book["productType"] === "Incentive")
+        book.publisher === "Marvel" &&
+        (book.productType === "Comic" || book.productType === "Incentive")
       ) {
-        book["msrp"] = marvelPriceSwitch[book["msrp"]]
-          ? marvelPriceSwitch[book["msrp"]]
-          : book["msrp"];
+        book.msrp = marvelPriceSwitch[book.msrp]
+          ? marvelPriceSwitch[book.msrp]
+          : book.msrp;
       }
       if (
-        book["publisher"] === "Idw" &&
-        (book["publisher"] === "Comic" || book["publisher"] === "Incentive")
+        book.publisher === "Idw" &&
+        (book.publisher === "Comic" || book.publisher === "Incentive")
       ) {
-        book["msrp"] = indiePriceSwitch[book["msrp"]]
-          ? indiePriceSwitch[book["msrp"]]
-          : book["msrp"];
+        book.msrp = indiePriceSwitch[book.msrp]
+          ? indiePriceSwitch[book.msrp]
+          : book.msrp;
       }
       books.push(book);
     }
@@ -170,7 +167,7 @@ const bookSort = (bookArray) => {
   const newBooks = [];
   const oldBooks = [];
   bookArray.forEach((book) => {
-    const releaseDate = new Date(book["release"]);
+    const releaseDate = new Date(book.release);
     if (releaseDate > currentDate) {
       newBooks.push(book);
     } else {
@@ -181,7 +178,7 @@ const bookSort = (bookArray) => {
   const beforeFoc = [];
   const afterFoc = [];
   newBooks.forEach((book) => {
-    const focDate = new Date(book["focDueDate"]);
+    const focDate = new Date(book.focDueDate);
     if (focDate > currentDate) {
       afterFoc.push(book);
     } else {
