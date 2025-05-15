@@ -1,4 +1,4 @@
-import pool from "../dbConfig.js";
+import { pool } from "../dbConfig.js";
 
 export const closePool = async (signal) => {
   try {

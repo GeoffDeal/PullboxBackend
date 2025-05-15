@@ -52,7 +52,7 @@ const keyTranslation = {
   "Image URL": "imageUrl",
 };
 
-async function xlsxToObjects(workbook, publisher) {
+export async function xlsxToObjects(workbook, publisher) {
   const books = [];
   const header = [];
   let series = [];
@@ -161,7 +161,7 @@ async function xlsxToObjects(workbook, publisher) {
   };
 }
 
-const bookSort = (bookArray) => {
+export const bookSort = (bookArray) => {
   const currentDate = new Date();
 
   const newBooks = [];
@@ -187,14 +187,14 @@ const bookSort = (bookArray) => {
   });
 
   afterFoc.sort((a, b) => {
-    const dateComp = new Date(a.FOCDueDate) - new Date(b.FOCDueDate);
+    const dateComp = new Date(a.focDueDate) - new Date(b.focDueDate);
     if (dateComp === 0) {
       return a.Issue - b.Issue;
     }
     return dateComp;
   });
   beforeFoc.sort((a, b) => {
-    const dateComp = new Date(b.FOCDueDate) - new Date(a.FOCDueDate);
+    const dateComp = new Date(b.focDueDate) - new Date(a.focDueDate);
     if (dateComp === 0) {
       return a.Issue - b.Issue;
     }
