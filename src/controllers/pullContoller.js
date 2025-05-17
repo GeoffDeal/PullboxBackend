@@ -120,7 +120,7 @@ export async function getWeeksPulls(req, res) {
   try {
     const sql = `
       SELECT pulls_list.*, pulls_list.id AS pulls_list_id, 
-            products.*, users.id, users.box_number 
+            products.*, products.id AS product_id, users.id AS user_id, users.box_number 
       FROM products 
       INNER JOIN pulls_list ON products.id = pulls_list.product_id 
       INNER JOIN users ON pulls_list.user_id = users.id 

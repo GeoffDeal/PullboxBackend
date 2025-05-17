@@ -36,7 +36,7 @@ export const transformWeeksPulls = (pull, name) => {
   const formattedPull = pullDate.toLocaleDateString("en-CA");
 
   const transformed = {
-    ID: pull.id,
+    // ID: pull.id,
     ProductName: pull.product_name,
     ItemCode: pull.item_code,
     Sku: pull.sku,
@@ -51,6 +51,7 @@ export const transformWeeksPulls = (pull, name) => {
     Variant: pull.variant,
     Printing: pull.printing,
     Incentive: pull.incentive,
+    productId: pull.product_id,
     userId: pull.user_id,
     amount: pull.amount,
     pullDate: formattedPull,
