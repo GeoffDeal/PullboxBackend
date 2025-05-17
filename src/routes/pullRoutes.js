@@ -18,7 +18,6 @@ router.post("/addpull", checkSignIn, validateData(pullPostSchema), addPull);
 router.patch(
   "/changepullamount/:id",
   checkSignIn,
-  validateId,
   validateData(pullAmountSchema),
   changePullAmount
 );
