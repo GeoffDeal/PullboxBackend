@@ -12,7 +12,13 @@ import { clerkMiddleware } from "@clerk/express";
 import { closePool, tableCheck } from "./src/utils/utilityFunctions.js";
 
 const app = express();
-
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  res.on("finish", () => {
+    console.log("Response headers:", res.getHeaders());
+  });
+  next();
+});
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "http://localhost:5173",
