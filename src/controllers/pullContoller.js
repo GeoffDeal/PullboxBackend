@@ -133,7 +133,7 @@ export async function getWeeksPulls(req, res) {
 
     if (results.length === 0) return res.status(204).send();
 
-    const userIds = [...new Set(results.map((r) => r.id))];
+    const userIds = [...new Set(results.map((r) => r.user_id))];
 
     const chunkedIds = (arr, size) =>
       Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
@@ -154,7 +154,7 @@ export async function getWeeksPulls(req, res) {
       userMap[user.id] = user.firstName + " " + user.lastName;
     });
     const formattedResults = results.map((product) => {
-      const name = userMap[product.id] || "Unknown User";
+      const name = userMap[product.user_id] || "Unknown User";
       return transformWeeksPulls(product, name);
     });
 
