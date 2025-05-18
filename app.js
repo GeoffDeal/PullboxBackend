@@ -13,12 +13,12 @@ import { closePool, tableCheck } from "./src/utils/utilityFunctions.js";
 
 const app = express();
 app.use((req, res, next) => {
-  console.log("Request Origin:", req.headers.origin);
-  res.on("finish", () => {
-    console.log("Response headers:", res.getHeaders());
-  });
+  if (req.headers.origin && req.headers.origin.endsWith("/")) {
+    req.headers.origin = req.headers.origin.slice(0, -1);
+  }
   next();
 });
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "http://localhost:5173",
