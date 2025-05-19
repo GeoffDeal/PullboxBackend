@@ -12,11 +12,6 @@ import { clerkMiddleware } from "@clerk/express";
 import { closePool, tableCheck } from "./src/utils/utilityFunctions.js";
 
 const app = express();
-app.use((req, res, next) => {
-  console.log("Authorization:", req.headers.authorization);
-  console.log("Cookie:", req.headers.cookie);
-  next();
-});
 
 app.use(
   cors({
@@ -25,19 +20,7 @@ app.use(
     credentials: true,
   })
 );
-app.use((req, res, next) => {
-  const isPublic = req.path.startsWith("/api/webhooks/");
-  if (isPublic) return next();
-  return clerkMiddleware({ apiKey: process.env.CLERK_SECRET_KEY })(
-    req,
-    res,
-    next
-  );
-});
-app.use("/api/webhooks", express.raw({ type: "application/json" }));
-app.use("/api/webhooks", webhookRouter);
 
-app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
@@ -45,23 +28,40 @@ app.get("/", (req, res) => {
 process.on("SIGINT", () => closePool("SIGINT")); //Close pool on exit
 process.on("SIGTERM", () => closePool("SIGTERM"));
 
-// Routes
+// Public Routes
+const publicRouter = express.Router();
 
-app.use("/products/", productRouter);
+publicRouter.use("/webhooks", express.raw({ type: "application/json" }));
 
-app.use("/users/", userRouter);
+publicRouter.use("/webhooks", webhookRouter);
 
-app.use("/subs/", subscriptionRouter);
+app.use("/api", publicRouter);
 
-app.use("/pulls/", pullRouter);
+// Protected Routes
 
-app.use("/notifications", notificationRouter);
+const protectedRouter = express.Router();
+protectedRouter.use(clerkMiddleware({ apiKey: process.env.CLERK_SECRET_KEY }));
+protectedRouter.use(express.json());
 
-app.use("/storeinfo", storeInfoRouter);
+protectedRouter.use("/products", productRouter);
 
-app.use("/priceadjustments", priceAdjustmentRouter);
+protectedRouter.use("/users", userRouter);
 
-const port = process.env.PORT || 3000; // Listening
+protectedRouter.use("/subs", subscriptionRouter);
+
+protectedRouter.use("/pulls", pullRouter);
+
+protectedRouter.use("/notifications", notificationRouter);
+
+protectedRouter.use("/storeinfo", storeInfoRouter);
+
+protectedRouter.use("/priceadjustments", priceAdjustmentRouter);
+
+app.use("/", protectedRouter);
+
+// Listening
+
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("Server running");
 });
