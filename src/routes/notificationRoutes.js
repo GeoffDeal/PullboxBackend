@@ -4,7 +4,7 @@ import {
   deleteNotification,
   getRecentNotifications,
 } from "../controllers/notificationController.js";
-import { validateData, validateId } from "../utils/validate.js";
+import { validateData } from "../utils/validate.js";
 import { notificationPostSchema } from "../schemas/notificationSchema.js";
 import { checkAdmin } from "../utils/authChecks.js";
 
@@ -16,12 +16,7 @@ router.post(
   validateData(notificationPostSchema),
   createNotification
 );
-router.delete(
-  "/deletenotification/:id",
-  checkAdmin,
-  validateId,
-  deleteNotification
-);
+router.delete("/deletenotification/:id", checkAdmin, deleteNotification);
 router.get("/getnotifications", getRecentNotifications);
 
 export default router;

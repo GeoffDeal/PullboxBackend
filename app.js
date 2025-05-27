@@ -8,8 +8,10 @@ import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
 import priceAdjustmentRouter from "./src/routes/priceAdjustmentRoutes.js";
 import webhookRouter from "./src/routes/webhookRoutes.js";
 import cors from "cors";
-import { clerkMiddleware } from "@clerk/express";
 import { closePool, tableCheck } from "./src/utils/utilityFunctions.js";
+import { requireAuth } from "./src/utils/authChecks.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
@@ -20,6 +22,9 @@ app.use(
     credentials: true,
   })
 );
+app.options("*", cors());
+
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
@@ -31,17 +36,14 @@ process.on("SIGTERM", () => closePool("SIGTERM"));
 // Public Routes
 const publicRouter = express.Router();
 
-publicRouter.use("/webhooks", express.raw({ type: "application/json" }));
+publicRouter.use("/", express.raw({ type: "application/json" }), webhookRouter);
 
-publicRouter.use("/webhooks", webhookRouter);
-
-app.use("/api", publicRouter);
+app.use("/api/webhooks", publicRouter);
 
 // Protected Routes
 
 const protectedRouter = express.Router();
-protectedRouter.use(clerkMiddleware({ apiKey: process.env.CLERK_SECRET_KEY }));
-protectedRouter.use(express.json());
+protectedRouter.use(requireAuth);
 
 protectedRouter.use("/products", productRouter);
 
@@ -57,7 +59,7 @@ protectedRouter.use("/storeinfo", storeInfoRouter);
 
 protectedRouter.use("/priceadjustments", priceAdjustmentRouter);
 
-app.use("/", protectedRouter);
+app.use("/api", protectedRouter);
 
 // Listening
 

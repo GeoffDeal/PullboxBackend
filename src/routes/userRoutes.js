@@ -15,12 +15,12 @@ import {
   userStatusSchema,
   userUpdateSchema,
 } from "../schemas/userSchema.js";
-import { checkAdmin, checkSignIn } from "../utils/authChecks.js";
+import { checkAdmin } from "../utils/authChecks.js";
 
 const router = express.Router();
 
 router.get("/customers", checkAdmin, getAllCustomers);
-router.get("/:id", checkSignIn, validateId, getOneUser);
+router.get("/:id", validateId, getOneUser);
 router.post("/create", validateData(userCreateSchema), createUser);
 router.patch(
   "/status/:id",
@@ -38,7 +38,6 @@ router.patch(
 );
 router.patch(
   "/update/:id",
-  checkSignIn,
   validateId,
   validateData(userUpdateSchema),
   updateUser
