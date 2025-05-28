@@ -7,7 +7,7 @@ import {
   getWeeksPulls,
   removePull,
 } from "../controllers/pullContoller.js";
-import { validateData, validateId } from "../utils/validate.js";
+import { validateData } from "../utils/validate.js";
 import { pullAmountSchema, pullPostSchema } from "../schemas/pullSchema.js";
 import { checkAdmin } from "../utils/authChecks.js";
 
@@ -20,7 +20,7 @@ router.patch(
   validateData(pullAmountSchema),
   changePullAmount
 );
-router.delete("/removepull/:id", validateId, removePull);
+router.delete("/removepull/:id", removePull);
 router.get("/checkpull", checkPull);
 router.get("/getuserpulls", getUserPulls);
 router.get("/getweekspulls", checkAdmin, getWeeksPulls);
