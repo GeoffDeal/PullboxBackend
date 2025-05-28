@@ -24,8 +24,6 @@ app.use(
 );
 app.options("*", cors());
 
-app.use(express.json());
-
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
@@ -42,6 +40,7 @@ app.use("/api/webhooks", publicRouter);
 
 // Protected Routes
 
+app.use(express.json());
 const protectedRouter = express.Router();
 protectedRouter.use(requireAuth);
 
