@@ -198,11 +198,11 @@ export async function getSearched(req, res) {
 }
 
 export async function getAllVar(req, res) {
-  const { seriesId, issue, variant } = req.query;
+  const { seriesId, issue } = req.query;
 
   try {
-    const sql = `SELECT * FROM products WHERE series_id = ? AND issue = ? AND variant <> ?`;
-    const [results] = await pool.execute(sql, [seriesId, issue, variant]);
+    const sql = `SELECT * FROM products WHERE series_id = ? AND issue = ?`;
+    const [results] = await pool.execute(sql, [seriesId, issue]);
 
     if (results.length === 0) {
       return res.status(204).json({ message: "No products found" });
