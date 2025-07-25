@@ -152,12 +152,24 @@ export async function getBrowsed(req, res) {
 
 export async function getSearched(req, res) {
   const { term, limit = 20, page = 1 } = req.query;
-
-  const wildcardTerm = term + "*";
+  const relevanceTerm = 2.5;
 
   try {
-    const countSql = `SELECT COUNT(*) AS totalCount FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE)`;
-    const [countResults] = await pool.query(countSql, [wildcardTerm]);
+    const countSql = `
+      SELECT COUNT(*) AS totalCount
+      FROM (
+        SELECT MATCH(product_name) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance
+        FROM products
+        WHERE MATCH(product_name) AGAINST(? IN NATURAL LANGUAGE MODE)
+        HAVING relevance > ?
+      ) AS filtered
+    `;
+    const [countResults] = await pool.query(countSql, [
+      term,
+      term,
+      relevanceTerm,
+    ]);
+
     const numberLimit = parseInt(limit);
     const numberPage = parseInt(page);
     const totalCount = countResults[0].totalCount;
@@ -165,17 +177,24 @@ export async function getSearched(req, res) {
     const validPage = maxPages === 0 ? 1 : Math.min(numberPage, maxPages);
     const offset = (validPage - 1) * numberLimit;
 
-    const sql = `SELECT * FROM products WHERE MATCH(product_name) AGAINST(? IN BOOLEAN MODE) 
+    const sql = `
+      SELECT *, 
+        MATCH(product_name) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance
+      FROM products
+      WHERE MATCH(product_name) AGAINST(? IN NATURAL LANGUAGE MODE)
+      HAVING relevance > ?
       ORDER BY 
+        relevance DESC,
         CASE 
           WHEN foc_due_date >= CURDATE() THEN 1 
           WHEN release_date >= CURDATE() THEN 2 
           ELSE 3 
-        END, 
+        END,
         foc_due_date ASC, 
-        release_date ASC 
-      LIMIT ? OFFSET ?`;
-    const values = [wildcardTerm, numberLimit, offset];
+        release_date ASC
+      LIMIT ? OFFSET ?
+    `;
+    const values = [term, term, relevanceTerm, numberLimit, offset];
 
     const [results] = await pool.query(sql, values);
 
