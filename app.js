@@ -7,6 +7,7 @@ import notificationRouter from "./src/routes/notificationRoutes.js";
 import storeInfoRouter from "./src/routes/storeInfoRoutes.js";
 import priceAdjustmentRouter from "./src/routes/priceAdjustmentRoutes.js";
 import webhookRouter from "./src/routes/webhookRoutes.js";
+import reorderRouter from "./src/routes/reordersRoutes.js";
 import cors from "cors";
 import { closePool, tableCheck } from "./src/utils/utilityFunctions.js";
 import { requireAuth } from "./src/utils/authChecks.js";
@@ -57,6 +58,8 @@ protectedRouter.use("/notifications", notificationRouter);
 protectedRouter.use("/storeinfo", storeInfoRouter);
 
 protectedRouter.use("/priceadjustments", priceAdjustmentRouter);
+
+protectedRouter.use("/reorders", reorderRouter);
 
 app.use("/api", protectedRouter);
 
