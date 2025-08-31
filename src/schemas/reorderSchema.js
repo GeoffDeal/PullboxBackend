@@ -10,6 +10,9 @@ export const reorderPostSchema = yup
     notes: yup.string(),
     orderDate: yup.string(),
     requestDate: yup.string(),
-    orderStatus: yup.string().required(),
+    orderStatus: yup
+      .string()
+      .oneOf(["ordered", "unavailable", "complete"])
+      .required(),
   })
   .noUnknown(true, "Unknown field present");
