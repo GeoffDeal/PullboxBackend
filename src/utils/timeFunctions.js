@@ -14,3 +14,8 @@ export function calcWeekEnd(date) {
   const weekEndString = weekEnd.toLocaleDateString("en-CA");
   return weekEndString;
 }
+
+export function stripTime(timeString) {
+  if (typeof timeString !== "string") timeString = timeString.toISOString();
+  return timeString.split("T")[0];
+}
