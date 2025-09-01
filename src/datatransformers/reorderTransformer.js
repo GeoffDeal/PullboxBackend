@@ -4,7 +4,6 @@ export const transformReorder = (reorder) => {
   const transformed = {
     id: reorder.id,
     userId: reorder.user_id,
-    // userName: reorder.userName,
     product: reorder.product,
     notes: reorder.notes,
     orderDate: stripTime(reorder.order_date),

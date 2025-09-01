@@ -81,12 +81,13 @@ export const tableCheck = async () => {
       );`);
     await pool.execute(`CREATE TABLE IF NOT EXISTS reorders (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id VARCHAR(100) NOT NULL,
+        user_id VARCHAR(100),
+        user_name VARCHAR(255),
         product VARCHAR(255) NOT NULL,
         notes TEXT,
         order_date DATE NOT NULL,
         request_date DATE,
-        order_status VARCHAR(50) NOT NULL DEFAULT 'pending',
+        order_status VARCHAR(50) NOT NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
         CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)

@@ -4,8 +4,9 @@ export const reorderPostSchema = yup
   .object({
     userId: yup
       .string()
-      .matches(/^user_[a-zA-Z0-9]+$/, "Invalid user ID format")
-      .required(),
+      .nullable()
+      .matches(/^user_[a-zA-Z0-9]+$/, "Invalid user ID format"),
+    userName: yup.string(),
     product: yup.string().required(),
     notes: yup.string(),
     orderDate: yup.string(),

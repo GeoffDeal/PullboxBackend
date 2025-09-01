@@ -3,22 +3,31 @@ import { transformReorder } from "../datatransformers/reorderTransformer.js";
 import { clerkClient } from "@clerk/express";
 
 export async function addReorder(req, res) {
-  const { userId, product, notes, orderDate, requestDate, orderStatus } =
-    req.body;
+  const {
+    userId,
+    userName,
+    product,
+    notes,
+    orderDate,
+    requestDate,
+    orderStatus,
+  } = req.body;
 
   try {
     const sql = `
             INSERT INTO reorders (
                 user_id,
+                user_name,
                 product,
                 notes,
                 order_date,
                 request_date,
                 order_status
-            ) VALUES (?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
     const values = [
       userId,
+      userName,
       product,
       notes,
       orderDate,
@@ -54,10 +63,16 @@ export async function getReorders(req, res) {
       ])
     );
 
-    const combinedData = results.map((result) => ({
-      ...result,
-      userName: userMap.get(result.user_id) || "Unknown User",
-    }));
+    const combinedData = results.map((result) => {
+      const userName = result.user_id
+        ? userMap.get(result.user_id) || "Unknown User"
+        : result.user_name;
+
+      return {
+        ...result,
+        ...(userName && { userName }),
+      };
+    });
 
     const transformedResults = combinedData.map(transformReorder);
 
