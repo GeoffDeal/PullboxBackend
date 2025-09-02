@@ -20,7 +20,7 @@ router.post(
   validateData(reorderPostSchema),
   addReorder
 );
-router.get("/getreorders", checkAdmin, getReorders);
+router.get("/getreorders/:filter", checkAdmin, getReorders);
 router.get(
   "/getcustomerreorders/:id",
   checkAdmin,

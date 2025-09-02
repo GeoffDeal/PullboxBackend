@@ -48,7 +48,12 @@ export async function addReorder(req, res) {
 
 export async function getReorders(req, res) {
   try {
-    const sql = `SELECT * FROM reorders WHERE order_status <> 'complete'`;
+    const { filter } = req.params;
+
+    const sql =
+      filter === "complete"
+        ? `SELECT * FROM reorders WHERE order_status = 'complete'`
+        : `SELECT * FROM reorders WHERE order_status <> 'complete'`;
     const [results] = await pool.execute(sql);
     const userIds = results.map((result) => result.user_id);
 
