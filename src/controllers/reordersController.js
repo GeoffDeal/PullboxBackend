@@ -103,3 +103,21 @@ export async function getCustomerReorders(req, res) {
       .json({ message: "Problem fetching reorders: ", error: err.message });
   }
 }
+
+export async function changeReorderStatus(req, res) {
+  const reorderId = req.params.id;
+  const newStatus = req.body.orderStatus;
+  try {
+    const sql = `UPDATE reorders SET order_status = ? WHERE id = ?`;
+    const [result] = await pool.execute(sql, [newStatus, reorderId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Reorder not found" });
+    }
+
+    res.status(200).json({ message: "Reorder status updated" });
+  } catch (err) {
+    console.error("Error updating status: ", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}

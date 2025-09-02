@@ -2,11 +2,15 @@ import express from "express";
 import { checkAdmin } from "../utils/authChecks.js";
 import {
   addReorder,
+  changeReorderStatus,
   getCustomerReorders,
   getReorders,
 } from "../controllers/reordersController.js";
 import { validateData, validateId } from "../utils/validate.js";
-import { reorderPostSchema } from "../schemas/reorderSchema.js";
+import {
+  reorderPatchSchema,
+  reorderPostSchema,
+} from "../schemas/reorderSchema.js";
 
 const router = express.Router();
 
@@ -22,6 +26,12 @@ router.get(
   checkAdmin,
   validateId,
   getCustomerReorders
+);
+router.patch(
+  "/changereorderstatus/:id",
+  checkAdmin,
+  validateData(reorderPatchSchema),
+  changeReorderStatus
 );
 
 export default router;

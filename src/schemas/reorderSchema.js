@@ -17,3 +17,10 @@ export const reorderPostSchema = yup
       .required(),
   })
   .noUnknown(true, "Unknown field present");
+
+export const reorderPatchSchema = yup.object({
+  orderStatus: yup
+    .string()
+    .oneOf(["ordered", "unavailable", "complete"])
+    .required(),
+});
